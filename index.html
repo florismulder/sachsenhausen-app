@@ -6,58 +6,47 @@
     <title>Sachsenhausen Gids</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #0f172a; color: #f1f5f9; overflow-x: hidden; }
-        
-        /* De interactieve kaart container */
+        body { font-family: 'Inter', sans-serif; background-color: #0f172a; color: #f1f5f9; }
         .map-viewport { 
             position: relative; 
             width: 100%; 
-            height: 400px; 
+            height: 450px; 
             background: #1e293b; 
             border-radius: 24px; 
             border: 2px solid #334155; 
-            overflow: scroll; /* Laat de docent scrollen over de kaart */
-            box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+            overflow: auto;
+            -webkit-overflow-scrolling: touch;
         }
-
         .map-image-wrapper { 
             position: relative; 
-            width: 800px; /* De kaart is groter dan het scherm voor detail */
-            height: 800px;
-            background-image: url('https://www.sachsenhausen-sbg.de/fileadmin/user_upload/Gedenkstaette/Besucherservice/Lageplan/Sachsenhausen_Lageplan_2021.jpg');
+            width: 1000px; 
+            height: 1000px;
+            background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/b/b3/Lageplan_KZ_Sachsenhausen.png/800px-Lageplan_KZ_Sachsenhausen.png');
             background-size: contain;
             background-repeat: no-repeat;
-            background-color: white;
+            background-position: center;
         }
-
         .map-pin { 
             position: absolute; 
-            width: 34px; 
-            height: 34px; 
+            width: 36px; height: 36px; 
             transform: translate(-50%, -50%); 
             border-radius: 50%; 
-            display: flex; 
-            items-center; 
-            justify-content: center; 
-            font-weight: 900; 
-            font-size: 14px; 
-            border: 2px solid white; 
-            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
-            z-index: 10;
+            display: flex; items-center; justify-content: center; 
+            font-weight: 900; font-size: 14px; border: 2px solid white; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.6);
+            z-index: 20;
         }
-
-        .pin-route { background: #2563eb; color: white; scale: 1.1; z-index: 20; }
-        .pin-other { background: rgba(71, 85, 105, 0.9); color: #cbd5e1; border-color: #475569; }
-
+        .pin-route { background: #2563eb; color: white; scale: 1.1; }
+        .pin-other { background: rgba(30, 41, 59, 0.8); color: #94a3b8; border-color: #475569; }
         .glass-card { background: rgba(30, 41, 59, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 24px; }
     </style>
 </head>
 <body class="min-h-screen">
 
     <header class="bg-slate-900/90 border-b border-slate-700 p-4 sticky top-0 z-50 flex justify-between items-center backdrop-blur-md">
-        <div>
-            <h1 class="font-black text-xl tracking-tighter uppercase">Sachsenhausen</h1>
-            <p class="text-[10px] tracking-[0.3em] text-blue-400 font-bold uppercase">Interactieve Gids</p>
+        <div onclick="showMenu()">
+            <h1 class="font-black text-xl tracking-tighter uppercase leading-none">Sachsenhausen</h1>
+            <p class="text-[9px] tracking-[0.3em] text-blue-400 font-bold uppercase mt-1">Gids Applicatie</p>
         </div>
         <button onclick="showMenu()" class="bg-blue-600 px-4 py-2 rounded-full text-xs font-black shadow-lg">KAART</button>
     </header>
@@ -66,33 +55,34 @@
         </main>
 
     <script>
-        const routeStops = [2, 3, 4, 6, 7, 10, 11, 12, 13, 15, 16, 17, 21, 23, 27, 34];
+        const routeStops = [2, 3, 4, 6, 7, 10, 11, 12, 13, 15, 16, 17, 21, 23, 26, 27, 29, 30, 32, 34];
 
-        // Coördinaten (x, y in pixels op de 800x800 kaart)
-        // Ik heb deze grofweg gepositioneerd op de driehoek van de officiële kaart
+        // Coördinaten gecorrigeerd voor de Wikimedia kaart
         const pins = {
-            1: {x: 435, y: 735}, 2: {x: 395, y: 720}, 3: {x: 410, y: 680}, 4: {x: 480, y: 680},
-            6: {x: 430, y: 640}, 10: {x: 405, y: 605}, 11: {x: 340, y: 590}, 12: {x: 405, y: 520},
-            13: {x: 405, y: 460}, 15: {x: 330, y: 460}, 16: {x: 330, y: 430}, 17: {x: 470, y: 460},
-            21: {x: 405, y: 380}, 23: {x: 405, y: 310}, 27: {x: 405, y: 200}, 34: {x: 520, y: 380}
+            2: {x: 480, y: 880}, 3: {x: 480, y: 820}, 4: {x: 600, y: 820}, 6: {x: 520, y: 780}, 
+            7: {x: 600, y: 760}, 10: {x: 480, y: 720}, 11: {x: 350, y: 720}, 12: {x: 480, y: 620},
+            13: {x: 480, y: 540}, 15: {x: 350, y: 540}, 16: {x: 350, y: 480}, 17: {x: 610, y: 540},
+            21: {x: 480, y: 440}, 23: {x: 480, y: 340}, 26: {x: 480, y: 220}, 27: {x: 480, y: 180},
+            29: {x: 480, y: 50}, 30: {x: 600, y: 200}, 32: {x: 400, y: 150}, 34: {x: 680, y: 440}
         };
 
         const locations = {
-            2: { title: "De Modellen", type: "long", next: 3, identify: "Informatiecentrum: eerste zaal met schaalmodellen.", text: "Hier zie je de driehoek. Sachsenhausen was het 'modèl-kamp', ontworpen om maximale controle met minimale inspanning te bereiken. De architectuur zelf was een wapen.", walking: "Loop naar buiten, de brede laan op (Camp Street)." },
-            10: { title: "Toren A", type: "long", next: 12, identify: "De hoofdingang met de beruchte tekst op het hek.", text: "Onder de tekst 'Arbeit macht frei' liepen gevangenen hun nieuwe, gruwelijke realiteit tegemoet. Let op de 'B' in ARBEIT; gevangenen hebben deze uit protest ondersteboven geplaatst.", walking: "Loop door de poort naar het grote plein." },
-            27: { title: "Station Z", type: "long", next: 34, identify: "Het grote witte beschermdak achterin het kamp.", text: "Station Z was de executieplaats. Hier bevonden zich de nekschot-installatie, de gaskamer en de crematoria. De plek waar de SS de massamoord op industriële schaal uitvoerde.", walking: "Loop terug langs de rand van het kamp naar de ziekenboeg." }
-            // Voeg hier de rest van je teksten toe op basis van de eerdere stops
+            2: { title: "De Modellen", type: "long", next: 3, identify: "Zaal met kamp-modellen in het bezoekerscentrum.", text: "Begin bij dit model. Sachsenhausen was geen 'toeval', maar een bewuste geometrische creatie. De driehoek stond voor totale controle.", extra: "Vraag voor studenten: Wat doet deze perfecte vorm met je gevoel van vrijheid?", sources: ["Morsch: Architectuur van de Macht"], walking: "Loop naar buiten de Lagerstraße op." },
+            3: { title: "Camp Street", type: "short", next: 4, identify: "De brede laan richting de kampingang.", text: "Dit was de scheiding. Links de SS, rechts de administratie. Voor gevangenen de weg naar het onbekende.", sources: ["Site Plan"], walking: "Loop door naar de SS-kazerne aan de rechterkant (#4)." },
+            10: { title: "Toren A", type: "long", next: 11, identify: "De centrale toegangspoort met de wachttoren.", text: "De poort naar de hel. Let op de tekst 'Arbeit macht frei'. Het was bedoeld om hoop te geven die er niet was.", extra: "De omgekeerde 'B' in ARBEIT wordt vaak gezien als een teken van verzet door gevangen-smeden.", sources: ["Gedenkstätte Archief"], walking: "Kijk direct naar het beveiligingssysteem naast de toren (#11)." },
+            27: { title: "Station Z", type: "long", next: 29, identify: "Het witte dak over de fundamenten van het crematorium.", text: "Hier eindigde de alfabetische lijst van locaties, en voor velen het leven. De plek van gaskamers en ovens.", extra: "In 1941 werden hier 10.000 Sovjet-krijgsgevangenen in sneltempo vermoord via een geniepige meetlat-installatie.", sources: ["Expositie Murder & Mass Murder"], walking: "Loop nu naar de noordelijke punt van de driehoek, Toren E (#29)." },
+            29: { title: "Toren E", type: "short", next: 30, identify: "De toren in de verste punt van de driehoek.", text: "Hier ziet u hoe dicht het kamp bij de bewoonde wereld lag. De stad Oranienburg was pijnlijk nabij.", sources: ["Town and Camp exhibition"], walking: "Loop naar het Sonderlager/Zone II aan de oostzijde (#30)." },
+            34: { title: "De Ziekenboeg", type: "long", next: 2, identify: "De stenen barakken R1 en R2 aan de rand.", text: "De plek van medische misdaden. Experimenten op mensen waren hier de gruwelijke standaard.", sources: ["Medical Crimes Report"], walking: "De rondleiding eindigt hier. Loop terug naar de hoofduitgang." }
         };
 
         function showMenu() {
             let html = `
                 <div class="mb-4">
                     <h2 class="text-2xl font-black">Interactieve Kaart</h2>
-                    <p class="text-slate-400 text-[10px] uppercase tracking-widest">Sleep om te navigeren • Klik op een nummer</p>
+                    <p class="text-slate-400 text-[10px] uppercase tracking-widest">Sleep de kaart • Tik op een nummer</p>
                 </div>
-                
                 <div class="map-viewport mb-6">
-                    <div class="map-image-wrapper" id="map-wrapper">
+                    <div class="map-image-wrapper">
                         ${Object.keys(pins).map(id => `
                             <div onclick="loadLocation(${id})" class="map-pin ${routeStops.includes(parseInt(id)) ? 'pin-route' : 'pin-other'}" 
                                  style="left: ${pins[id].x}px; top: ${pins[id].y}px;">
@@ -101,20 +91,14 @@
                         `).join('')}
                     </div>
                 </div>
-
-                <div class="glass-card p-5 mb-10">
-                    <h3 class="text-blue-400 font-black text-xs uppercase mb-3">Instructie</h3>
-                    <p class="text-sm text-slate-300 leading-relaxed">
-                        Gebruik de kaart om je te oriënteren. De blauwe nummers volgen de route. 
-                        Tik op een nummer om de tekst en bronnen voor die plek te openen.
-                    </p>
+                <div class="grid grid-cols-1 gap-3">
+                    <button onclick="loadLocation(2)" class="bg-blue-600 p-5 rounded-2xl font-black text-center shadow-lg uppercase tracking-widest">Start de Route</button>
                 </div>
             `;
             document.getElementById('app-content').innerHTML = html;
-            // Scroll de kaart naar de startpositie (onderkant)
-            const viewport = document.querySelector('.map-viewport');
-            viewport.scrollTop = 400;
-            viewport.scrollLeft = 200;
+            // Scroll naar onderkant kaart (startpunt)
+            const vp = document.querySelector('.map-viewport');
+            if(vp) { vp.scrollTop = 600; vp.scrollLeft = 250; }
         }
 
         function loadLocation(id) {
@@ -122,40 +106,66 @@
             if (!loc) {
                 document.getElementById('app-content').innerHTML = `
                     <div class="glass-card p-8 text-center mt-10">
-                        <h2 class="text-5xl font-black mb-4 text-slate-700">#${id}</h2>
-                        <p class="text-slate-400 mb-8 italic text-sm leading-relaxed text-center">Informatie over deze specifieke locatie wordt momenteel verwerkt door de gids-app.</p>
-                        <button onclick="showMenu()" class="w-full bg-slate-700 py-4 rounded-2xl font-black text-xs tracking-widest uppercase text-white shadow-xl">Terug naar Kaart</button>
+                        <h2 class="text-6xl font-black mb-4 text-slate-800">#${id}</h2>
+                        <p class="text-slate-400 mb-8 italic">Tekst voor deze locatie volgt nog.</p>
+                        <button onclick="showMenu()" class="w-full bg-slate-700 py-4 rounded-2xl font-black uppercase text-white">Kaart</button>
                     </div>`;
                 return;
             }
 
             document.getElementById('app-content').innerHTML = `
                 <div class="animate-in slide-in-from-right-4 duration-300">
-                    <button onclick="showMenu()" class="mb-6 text-blue-400 text-xs font-black uppercase flex items-center bg-blue-500/10 px-4 py-2 rounded-full border border-blue-500/20">
+                    <button onclick="showMenu()" class="mb-6 text-blue-400 text-[10px] font-black uppercase flex items-center bg-blue-500/10 px-4 py-2 rounded-full border border-blue-500/20">
                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M15 19l-7-7 7-7"></path></svg> Terug naar kaart
                     </button>
 
                     <div class="mb-6 relative">
                         <span class="text-slate-800 font-black text-8xl absolute -right-2 -top-10 -z-10 opacity-40">#${id}</span>
-                        <p class="text-blue-400 text-[10px] font-black uppercase tracking-[0.3em] mb-1">${loc.type === 'long' ? 'Focus Stop (2 min)' : 'Korte stop (1 min)'}</p>
                         <h2 class="text-4xl font-black text-white leading-tight">${loc.title}</h2>
                     </div>
 
-                    <div class="bg-blue-600/20 border border-blue-500/30 p-4 rounded-2xl mb-6 flex items-start">
-                        <div class="bg-blue-500 p-2 rounded-lg mr-4 mt-1 shadow-lg shadow-blue-500/30">
-                            <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20"><path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/><path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/></svg>
-                        </div>
-                        <div>
-                            <p class="text-[10px] font-black text-blue-300 uppercase tracking-widest leading-none mb-1">Herkenbaar aan:</p>
-                            <p class="text-sm font-bold text-white">${loc.identify}</p>
-                        </div>
+                    <div class="bg-blue-600/20 border border-blue-500/30 p-4 rounded-2xl mb-6">
+                        <p class="text-[10px] font-black text-blue-300 uppercase tracking-widest mb-1">Herkenbaar aan:</p>
+                        <p class="text-sm font-bold text-white">${loc.identify}</p>
                     </div>
 
-                    <div class="glass-card p-6 mb-6 shadow-2xl">
-                        <div class="text-[1.15rem] leading-relaxed text-slate-100 space-y-6">
-                            ${loc.text}
-                            ${loc.extra ? `<div class="bg-blue-600/30 border-l-4 border-blue-500 p-4 italic text-blue-50 rounded-r-xl text-sm">${loc.extra}</div>` : ''}
+                    <div class="glass-card p-6 mb-6">
+                        <div class="text-lg leading-relaxed text-slate-100 space-y-6 font-medium">
+                            <p>${loc.text}</p>
+                            ${loc.extra ? `<div class="bg-blue-900/40 border-l-4 border-blue-500 p-4 italic text-blue-100 rounded-r-xl text-sm">${loc.extra}</div>` : ''}
                         </div>
                         
                         <div class="mt-10">
-                            <button id="btn-klaar" onclick="finishLocation(${id})" class="w-full bg-white text-slate-950 font-black py-5 rounded-2xl shadow-xl text
+                            <button id="btn-klaar" onclick="finishLocation(${id})" class="w-full bg-white text-slate-950 font-black py-5 rounded-2xl shadow-xl text-xl transition-all active:scale-95">
+                                IK BEN KLAAR
+                            </button>
+
+                            <div id="next-step" class="hidden mt-4 p-6 bg-blue-600 rounded-2xl shadow-2xl border border-white/10">
+                                <p class="text-[10px] font-black text-blue-100 uppercase tracking-widest mb-1">Volgende stap</p>
+                                <p class="text-white font-bold mb-4">${loc.walking}</p>
+                                <button onclick="loadLocation(${loc.next})" class="w-full bg-slate-900/60 text-white font-black py-4 rounded-xl border border-white/20 text-xs">OPEN STOP #${loc.next}</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-8 px-2 pb-10">
+                        <h4 class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 italic">Bronnen</h4>
+                        <ul class="text-[10px] text-slate-500 space-y-1">
+                            ${loc.sources.map(s => `<li>• ${s}</li>`).join('')}
+                        </ul>
+                    </div>
+                </div>
+            `;
+            window.scrollTo(0,0);
+        }
+
+        function finishLocation(id) {
+            document.getElementById('btn-klaar').classList.add('hidden');
+            document.getElementById('next-step').classList.remove('hidden');
+            document.getElementById('next-step').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        showMenu();
+    </script>
+</body>
+</html>
