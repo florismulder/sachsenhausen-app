@@ -1,147 +1,138 @@
-const locations = {
-    1: { 
-        type: 'info', 
-        title: "Bezoekerscentrum", 
-        text: "Dit gebouw diende oorspronkelijk als werkplaats voor de SS ('Instandsetzungswerkstatt'). Hier werden wapens en voertuigen van de bewakers onderhouden. Het feit dat bezoekers nu hier hun tocht beginnen, is symbolisch: je betreedt de wereld van de daders voordat je die van de slachtoffers ziet.",
-        extra: "Detail: Let op de robuuste bouwstijl; dit moest de eeuwigheidswaarde van het Derde Rijk uitstralen."
-    },
-    2: { 
-        type: 'long', 
-        title: "De Modellen", 
-        text: "Sachsenhausen was het 'modèl-kamp', ontworpen door architecten die geloofden dat architectuur een middel tot onderdrukking was. De perfecte gelijkzijdige driehoek zorgde ervoor dat vanuit Toren A elke barak en elke hoek van de appèlplaats met één machinegeweer bestreken kon worden. Dit 'panopticon-principe' was bedoeld om de gevangenen psychologisch te breken: ze wisten nooit of ze op dat moment bekeken werden, dus gedroegen ze zich altijd als een opgejaagd dier.",
-        extra: "Anekdote: Heinrich Himmler noemde dit ontwerp 'het modernste en mooiste kamp van Duitsland'. Terwijl de SS sprak over esthetiek, moesten gevangenen in de modder van de bouwplaats vechten voor hun leven.",
-        sources: ["Gedenkstätte Sachsenhausen", "Günter Morsch: Architectuur van de Macht"],
-        walking: "Loop naar buiten de brede laan op (Lagerstraße)." 
-    },
-    3: { 
-        type: 'short', 
-        title: "Camp Street (Lagerstraße)", 
-        text: "De Lagerstraße was de centrale as van de terreur. Links bevonden zich de administratiegebouwen van de daders, rechts de ingang naar het kamp. Voor gevangenen was dit de 'weg van de waarheid': hier werden ze publiekelijk vernederd bij aankomst, vaak terwijl de inwoners van Oranienburg aan de andere kant van het hek gewoon hun dagelijkse boodschappen deden.",
-        extra: "Detail: De breedte van de straat was precies berekend zodat colonnes gevangenen in strakke rijen konden marcheren voor inspectie.",
-        walking: "Loop door naar de SS-kazernes aan de rechterkant (#4)." 
-    },
-    4: { 
-        type: 'short', 
-        title: "SS-Troop Camp", 
-        text: "Hier waren de 'Totenkopf'-eenheden gehuisvest. Dit waren geen gewone soldaten, maar mannen die getraind werden in absolute wreedheid. In hun vrije tijd hadden ze hier sportvelden en een bioscoop. Het contrast tussen hun luxueuze vrije tijd en de gruwelen die ze overdag begingen, is een van de meest schokkende aspecten van deze plek.",
-        extra: "Anekdote: SS-ers namen hier vaak hun families mee naartoe voor uitstapjes, terwijl op gehoorsafstand gevangenen werden gemarteld.",
-        walking: "Loop naar het hoofdkwartier van de kampinspectie (#6)." 
-    },
-    6: { 
-        type: 'short', 
-        title: "Administratie IKL", 
-        text: "Dit was het zenuwcentrum voor alle concentratiekampen in Europa (Inspektion der Konzentrationslager). Hier werden de besluiten genomen over transporten naar Auschwitz en andere vernietigingskampen. Sachsenhausen was dus niet zomaar een kamp, het was het hoofdkantoor van de hele Holocaust-bureaucratie.",
-        extra: "Detail: In dit gebouw werd de 'efficiëntie' van de dood in grafieken bijgehouden.",
-        walking: "Loop naar de Villa van de Commandant (#7)." 
-    },
-    7: { 
-        type: 'short', 
-        title: "Commandant Villa", 
-        text: "De commandant van Sachsenhausen woonde hier in een riante villa met een prachtige tuin. Zijn kinderen speelden in het gras, terwijl de as uit de crematoria soms op hun speelgoed neerdaalde. Deze 'banaliteit van het kwaad' laat zien hoe nazi-beulslieden hun werk en privéleven volledig van elkaar konden scheiden.",
-        extra: "Anekdote: Commandant Kaindl hield hier diners voor nazi-prominenten, waarbij de 'beste' wijnen werden geschonken, betaald van het goud dat uit de monden van vermoorde gevangenen was getrokken.",
-        walking: "Loop naar de hoofdingang: Toren A (#10)." 
-    },
-    10: { 
-        type: 'long', 
-        title: "Toren A", 
-        text: "U staat nu voor de beruchte spreuk 'Arbeit macht frei'. Dit was puur cynisme: de enige weg naar de vrijheid was door de schoorsteen van het crematorium. Toren A was zwaarbewapend en fungeerde als de 'sluis' naar de hel. Zodra je deze poort doorging, verloor je je naam en werd je een nummer. De SS gebruikte dit punt voor 'poort-controles', waarbij gevangenen urenlang moesten wachten en geslagen werden voor de kleinste fout in hun houding.",
-        extra: "Detail: Kijk naar de letter 'B' in ARBEIT. Gevangenen die het hek moesten smeden, hebben de onderste boog van de B groter gemaakt dan de bovenste (ondersteboven). Dit was een van de weinige vormen van blijvend, fysiek verzet dat de SS nooit heeft opgemerkt.",
-        sources: ["Stiftung Brandenburgische Gedenkstätten"],
-        walking: "Kijk direct rechts van de toren naar de dodenstrook (#11)." 
-    },
-    11: { 
-        type: 'long', 
-        title: "De Dodenstrook", 
-        text: "Tussen de barakken en het elektrische hek lag een grindstrook: de dodenstrook. Wie hier ook maar één voet op zette, werd zonder waarschuwing door de bewakers in de torens neergeschoten. De bewakers kregen zelfs een beloning (extra verlof of sigaretten) voor elk 'neergeschoten individu' in deze zone. Dit leidde ertoe dat SS-ers soms de pet van een gevangene in de strook gooiden en hem dwongen deze te gaan halen, om hem vervolgens 'tijdens een ontsnappingspoging' te vermoorden.",
-        extra: "Anekdote: Gevangenen die de wanhoop nabij waren, kozen vaak voor 'het hek'. Ze renden bewust de strook op om een einde aan hun lijden te maken.",
-        sources: ["Dagboekfragmenten overlevenden"],
-        walking: "Loop de Appèlplaats op (#12)." 
-    },
-    12: { 
-        type: 'short', 
-        title: "Appèlplaats", 
-        text: "De Appèlplaats was het toneel van dagelijkse terreur. Twee keer per dag, in de vrieskou of brandende zon, moesten alle gevangenen hier aantreden. Als er iemand miste, moest iedereen blijven staan tot de persoon gevonden was – soms de hele nacht lang. Mensen vroren dood op de plek waar ze stonden. De Appèlplaats was bedoeld om de massa te controleren en elk individu te laten voelen dat ze niets meer waren dan een statistiek.",
-        extra: "Detail: De straf 'straf-appèl' kon uren duren, waarbij gevangenen op hun knieën moesten zitten of hun armen gestrekt moesten houden.",
-        walking: "Loop naar de gemarkeerde baan op de grond (#13)." 
-    },
-    13: { 
-        type: 'short', 
-        title: "Schoentestbaan", 
-        text: "Dit was een vorm van 'Vernichtung durch Arbeit'. Gevangenen van het strafcommando moesten hier 40 kilometer per dag rennen over grind, zand en beton om de kwaliteit van legerlaarzen te testen voor bedrijven als Salamander en I.G. Farben. Ze moesten vaak zware zakken dragen om de belasting te verhogen. Velen bezweken hier aan uitputting of werden door de SS doodgeknuppeld als ze het tempo niet bijhielden.",
-        extra: "Anekdote: Sommige gevangenen kregen opzettelijk te kleine schoenen om te kijken hoe snel ze blaren en infecties zouden ontwikkelen.",
-        walking: "Loop naar de houten barakken aan de linkerzijde (#15)." 
-    },
-    15: { 
-        type: 'long', 
-        title: "Barak 38 (Joods Lager)", 
-        text: "Na de Kristallnacht in 1938 werden hier meer dan 6.000 Joodse mannen samengeperst. De omstandigheden waren hier nog slechter dan in de rest van het kamp. Ze kregen minder eten en werden vaker slachtoffer van willekeurig geweld. De barak is een symbool van de vroege Holocaust. In 1992 werd dit gebouw door neo-nazi's in brand gestoken. De huidige staat van het gebouw, met de verkoolde resten, is een dubbel monument: voor de slachtoffers van toen en tegen het haat van nu.",
-        extra: "Detail: In de barak zie je de originele stapelbedden waar drie personen op één smal matras moesten slapen.",
-        sources: ["Expositie Joodse Gevangenen"],
-        walking: "Loop naar de barak ernaast (#16)." 
-    },
-    16: { 
-        type: 'long', 
-        title: "Barak 39 (Alledaags Leven)", 
-        text: "Hier leer je hoe een 'normale' dag eruitzag. Van de brute wekdienst om 04:30 uur tot het gevecht om een kom waterige soep. De barak was een plek van sociale strijd: gevangenen uit verschillende landen en met verschillende achtergronden moesten hier zien te overleven. Er was een strikte hiërarchie, vaak aangestuurd door de 'Kapo's' (gevangenen die als opzichter werkten), die soms nog wreder waren dan de SS om hun eigen hachje te redden.",
-        extra: "Anekdote: Gevangenen probeerden hier 'cultureel verzet' te plegen door in het geheim liedjes te zingen of gedichten voor te dragen om de moed erin te houden.",
-        sources: ["Dagelijks Leven in Sachsenhausen"],
-        walking: "Loop naar de gevangenis, het stenen gebouw met de tralies (#17)." 
-    },
-    17: { 
-        type: 'long', 
-        title: "De Gevangenis (Zellenbau)", 
-        text: "De Zellenbau was de gevangenis binnen het concentratiekamp. Hier werden de 'prominente' gevangenen vastgehouden: verzetsstrijders zoals de Nederlander Pim Boellaard, maar ook nazi-vijanden zoals Georg Elser. De isolatie was totaal. Gevangenen mochten wekenlang met niemand praten. De martelingen die hier door de Gestapo werden uitgevoerd, waren berucht. Het was de plek waar de nazi's probeerden de laatste restjes informatie uit hun belangrijkste tegenstanders te persen.",
-        extra: "Detail: Georg Elser, de man die bijna Hitler doodde met een tijdbom, zat hier 5 jaar lang in een speciale cel voordat hij vlak voor de bevrijding werd vermoord.",
-        sources: ["Georg Elser Gedenkstätte"],
-        walking: "Loop naar de keuken en de wasserijgebouwen (#21)." 
-    },
-    21: { 
-        type: 'short', 
-        title: "De Wasserij", 
-        text: "Hoewel de SS hygiëne predikte voor de buitenwereld, was de wasserij een plek van uitbuiting. Gevangenen moesten hier loodzware natte kleding verwerken. In de kelder zijn nog steeds muurschilderingen te vinden die gevangenen in het geheim maakten. Deze tekeningen tonen scènes uit een normaal leven: een bootje op het water, een huisje in het bos. Het was hun manier om mentaal te ontsnappen aan de grijze hel van het kamp.",
-        extra: "Detail: De kelder van de wasserij diende later ook als schuilkelder voor de SS tijdens geallieerde bombardementen.",
-        walking: "Loop naar de grote obelisk in het midden (#23)." 
-    },
-    23: { 
-        type: 'long', 
-        title: "De Obelisk", 
-        text: "Dit gigantische monument werd in 1961 door de DDR geplaatst. De stijl is typisch communistisch: heroïsch en monumentaal. De focus ligt volledig op het politieke verzet. De 18 rode driehoeken bovenaan symboliseren de nationaliteiten van de gevangenen. Hoewel het een indrukwekkend eerbetoon is, is er ook kritiek: de DDR 'claimde' het kamp als een overwinning van het communisme, waarbij andere groepen slachtoffers, zoals Joden, Jehova's Getuigen en homoseksuelen, lange tijd op de achtergrond bleven.",
-        extra: "Vraag aan studenten: Hoe voelt dit monument vergeleken met de rest van het kamp? Is het een plek van herdenking of van propaganda?",
-        walking: "Loop naar Station Z, achter de obelisk (#27)." 
-    },
-    27: { 
-        type: 'long', 
-        title: "Station Z", 
-        text: "Station Z was het eindpunt. De naam was een macabere grap van de SS: de letter A (Toren A) was de ingang, de letter Z de uitgang. Dit complex bevatte de gaskamer, de nekschot-installatie en de crematoria. Hier vond de massamoord plaats. In 1941 werden hier meer dan 10.000 Sovjet-krijgsgevangenen in sneltempo vermoord. De SS had een 'meetlat' ontworpen waarbij de gevangene dacht dat zijn lengte werd gemeten, maar hij door een gat in de muur achter hem werd neergeschoten.",
-        extra: "Anekdote: Om de schoten te maskeren voor de buitenwereld en andere gevangenen, liet de SS tijdens executies luide marsmuziek over het terrein schallen.",
-        sources: ["Expositie Murder and Mass Murder"],
-        walking: "Loop naar de massagraven van het Sovjet-kamp (#32)." 
-    },
-    32: { 
-        type: 'long', 
-        title: "Massagraven", 
-        text: "Sachsenhausen hield niet op te bestaan in 1945. Na de oorlog namen de Sovjets het kamp over als 'Speziallager Nr. 7'. Hier werden voormalige nazi's, maar ook politieke tegenstanders van het communisme opgesloten. Tussen 1945 en 1950 stierven hier nog eens 12.000 mensen aan honger en ziekte. Ze werden in anonieme massagraven gedumpt. Deze plek herinnert ons aan de 'dubbele geschiedenis' van Sachsenhausen: twee totalitaire systemen die dezelfde plek gebruikten voor onderdrukking.",
-        extra: "Detail: De kruizen die je hier ziet, zijn pas na de val van de Berlijnse Muur geplaatst. In de DDR-tijd mocht er niet over dit Sovjet-verleden gesproken worden.",
-        walking: "Loop naar de stenen barakken van de Ziekenboeg (#34)." 
-    },
-    34: { 
-        type: 'long', 
-        title: "De Ziekenboeg (Revier)", 
-        text: "In de Ziekenboeg barakken (R1 en R2) vond de ultieme perversie van de medische wetenschap plaats. Nazi-artsen voerden hier experimenten uit op gevangenen om te zien hoe snel wonden genazen na infecties, of hoe het lichaam reageerde op gifstoffen. Ook vond hier de systematische castratie van homoseksuelen en 'asocialen' plaats. De artsen die hier werkten, zagen de gevangenen niet als patiënten, maar als biologisch materiaal voor hun gestoorde rassenideologie.",
-        extra: "Anekdote: Er zijn verhalen van gevangen-verplegers die hun eigen leven riskeerden door medicijnen van de SS te stelen om hun medegevangenen in het geheim te helpen.",
-        sources: ["Medische Misdaden in Sachsenhausen"],
-        walking: "De tour eindigt hier. Loop terug naar de hoofduitgang." 
-    }
-};
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Sachsenhausen Gids - Volledige Editie</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #0f172a; color: #f1f5f9; margin: 0; }
+        .sticky-header { position: sticky; top: 0; z-index: 50; background: #0f172a; border-bottom: 2px solid #334155; }
+        .map-img { width: 100%; height: auto; max-height: 240px; object-fit: contain; background: #fff; display: block; }
+        .btn-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; padding: 15px; }
+        .loc-btn { aspect-ratio: 1/1; border-radius: 14px; font-weight: 900; font-size: 1.2rem; border: 2px solid transparent; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
+        .loc-btn:active { transform: scale(0.9); }
+        .btn-long { background: #fbbf24; color: #000; border-color: #f59e0b; box-shadow: 0 4px 10px rgba(251, 191, 36, 0.3); }
+        .btn-short { background: #3b82f6; color: #fff; border-color: #2563eb; }
+        .btn-info { background: #334155; color: #94a3b8; border-color: #1e293b; }
+        .detail-view { position: fixed; inset: 0; background: #020617; z-index: 100; overflow-y: auto; padding: 20px; display: none; }
+        .glass-card { background: rgba(30, 41, 59, 0.8); border-radius: 30px; padding: 28px; border: 1px solid rgba(255,255,255,0.1); }
+        .animate-up { animation: slideUp 0.3s ease-out; }
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    </style>
+</head>
+<body>
 
-// VUL DE REST VAN DE 40 LOCATIES AAN MET INFO-TEKSTEN
-for(let i=1; i<=40; i++) {
-    if(!locations[i]) {
-        locations[i] = { 
-            type: 'info', 
-            title: `Locatie #${i}`, 
-            text: `Dit gebouw of deze plek was een cruciaal onderdeel van de kamp-infrastructuur. Hoewel minder bekend dan de grote barakken, was elke meter van dit terrein doordrenkt van de bureaucratische controle van de SS. Gebouwen zoals deze dienden vaak als magazijnen voor de bezittingen van gevangenen of als technische ruimtes om het hekwerk onder stroom te houden.`,
-            extra: `Detail: In Sachsenhausen was niets toeval. Elk nummer op deze kaart vertegenwoordigt een radertje in de machine van de Holocaust.`
+    <div id="main-ui">
+        <div class="sticky-header">
+            <div class="p-4 flex justify-between items-center">
+                <h1 class="font-black text-xl tracking-tighter">SACHSENHAUSEN GIDS</h1>
+                <button onclick="showGuide()" class="bg-blue-600 text-[10px] font-black px-4 py-2 rounded-full uppercase">Handleiding</button>
+            </div>
+            <img src="plattegrond_site_sachsenhausen.png" alt="Plattegrond" class="map-img">
+            <div class="px-6 py-2 flex justify-between bg-slate-900 text-[9px] font-black uppercase tracking-widest border-t border-slate-800">
+                <span class="text-yellow-500">● Focus</span>
+                <span class="text-blue-500">● Route</span>
+                <span class="text-slate-500">● Info</span>
+            </div>
+        </div>
+        <div class="btn-grid" id="loc-grid"></div>
+    </div>
+
+    <div id="detail-ui" class="detail-view"></div>
+
+    <script>
+        const locations = {
+            1: { type: 'info', title: "Bezoekerscentrum", text: "Oorspronkelijk was dit de SS-garage en werkplaats. Hier werden de voertuigen van de daders glimmend gehouden. Vandaag dient het als drempel: je begint bij de luxe van de daders voordat je de ellende van de slachtoffers ziet.", extra: "Kijk naar de zware balken; dit gebouw was bedoeld voor de eeuwigheid." },
+            2: { type: 'long', title: "De Modellen", text: "De driehoeksvorm van Sachsenhausen was een experiment in totale controle. Vanuit Toren A overzag één bewaker elke barak. Het panopticon-ontwerp zorgde voor een constante psychologische druk: gevangenen gedroegen zich altijd alsof ze bekeken werden.", extra: "Anekdote: Architecten zagen dit als een 'modern' meesterwerk, terwijl de bouw gevangenen hun leven kostte.", sources: ["Morsch, 2014"], walking: "Loop de Lagerstraße op naar de kazerne." },
+            3: { type: 'short', title: "Lagerstraße", text: "Dit was de centrale as. Voor gevangenen de 'weg van de waarheid'. Hier werden ze bij aankomst publiekelijk vernederd en geregistreerd.", walking: "Loop door naar #4." },
+            4: { type: 'short', title: "SS-Kazerne", text: "Hier woonden de Totenkopf-bewakers. Het contrast tussen hun gezinsleven en de kampwreedheid is hier tastbaar.", walking: "Loop naar het hoofdkwartier (#6)." },
+            5: { type: 'info', title: "Administratiegebouw", text: "Gebruikt voor de personeelsplanning van de SS. Hier werd bepaald wie op welke wachttoren stond en wie de executies uitvoerde.", extra: "Banaliteit van het kwaad: de roosters werden hier simpelweg met pen en papier ingevuld." },
+            6: { type: 'short', title: "Hoofdkwartier", text: "Het administratieve hart van alle concentratiekampen. Hier werden de dodenlijsten van heel Europa beheerd.", walking: "Loop naar #7." },
+            7: { type: 'short', title: "Commandant Villa", text: "De riante woning van de kampcommandant. Zijn kinderen speelden in de tuin terwijl meters verderop mensen bezweken.", extra: "Detail: De villa had een zwembad voor de SS-familie.", walking: "Loop naar de poort: Toren A (#10)." },
+            8: { type: 'info', title: "Nieuw Museum", text: "In de DDR-tijd gebouwd als het 'Museum van het Verzet'. Het toont hoe de geschiedenis later voor politieke doeleinden werd gebruikt.", extra: "Let op de socialistische architectuur van het gebouw." },
+            9: { type: 'info', title: "Groene Barak", text: "Een van de weinige originele gebouwen buiten het eigenlijke gevangenenkamp. Gebruikt voor administratie en opslag." },
+            10: { type: 'long', title: "Toren A", text: "De beruchte poort met 'Arbeit macht frei'. Dit was het nulpunt van de ontmenselijking. Zodra gevangenen hieronderdoor liepen, verloren ze hun naam en werden ze een nummer.", extra: "Detail: De letter 'B' in ARBEIT staat ondersteboven; een teken van verzet van de gevangen-smeden.", sources: ["Stiftung Gedenkstätten"], walking: "Kijk naar de dodenstrook (#11)." },
+            11: { type: 'long', title: "Dodenstrook", text: "De grindstrook bij het hek. Wie hierop stapte werd direct neergeschoten. Bewakers kregen extra verlof voor elk 'neergeschoten individu' in deze zone.", extra: "Anekdote: SS-ers gooiden vaak petten van gevangenen in de strook om ze in de val te lokken.", walking: "Loop de Appèlplaats op (#12)." },
+            12: { type: 'short', title: "Appèlplaats", text: "Urenlang stilstaan in de vrieskou voor de dagelijkse tellingen. Een methode om de menselijke wil systematisch te breken.", walking: "Loop naar de testbaan (#13)." },
+            13: { type: 'short', title: "Schoentestbaan", text: "Gevangenen moesten hier 40km per dag rennen over grind en beton om legerlaarzen te testen voor de industrie.", extra: "Detail: De industrie verdiende kapitalen aan deze dwangarbeid.", walking: "Loop naar de barakken (#15)." },
+            14: { type: 'info', title: "Klinkerwerk", text: "Fundamenten van de werkplaatsen waar gevangenen stenen moesten bakken voor de bouwprojecten van Hitler in Berlijn.", extra: "Dit was een van de zwaarste strafcommando's." },
+            15: { type: 'long', title: "Barak 38 (Joods Lager)", text: "Na de Kristallnacht (1938) werden hier duizenden Joodse mannen samengeperst. In 1992 staken neonazi's deze barak in brand.", extra: "De littekens van de brand herinneren ons eraan dat haat ook na 1945 bleef bestaan.", sources: ["Expositie Joods Lager"], walking: "Loop naar #16." },
+            16: { type: 'long', title: "Barak 39 (Leven)", text: "Dagelijks leven: 400 mannen in een ruimte voor 150. Honger, slaaptekort en de totale afwezigheid van privacy bepaalden de dag.", sources: ["Dagelijks Leven Expo"], walking: "Loop naar de gevangenis (#17)." },
+            17: { type: 'long', title: "Zellenbau", text: "De gevangenis binnen het kamp. Plek voor isolatie en marteling van verzetsstrijders en prominente gevangenen.", extra: "Georg Elser, die Hitler bijna doodde, zat hier jarenlang vast.", walking: "Loop naar de wasserij (#21)." },
+            18: { type: 'info', title: "Keuken", text: "Hier werd de beruchte 'hongersoep' bereid. Het was een plek van corruptie waar SS-ers de beste ingrediënten voor zichzelf hielden.", extra: "De keuken was het hart van de interne kamphiërarchie." },
+            19: { type: 'info', title: "Effektenkammer", text: "Opslag van de persoonlijke bezittingen van gevangenen. Alles (kleding, sieraden, trouwringen) werd hier gestolen en geregistreerd.", extra: "Dit was de bureaucratie van de plundering." },
+            20: { type: 'info', title: "Kledingmagazijn", text: "Plek waar gevangenen hun gestreepte kampkleding ontvingen. Een cruciaal moment in het proces van ontmenselijking.", extra: "De kleding was vaak te dun en bood geen bescherming tegen de kou." },
+            21: { type: 'short', title: "Wasserij", text: "Loodzware dwangarbeid. In de kelder maakten gevangenen muurschilderingen van een normaal leven om mentaal te overleven.", walking: "Loop naar de obelisk (#23)." },
+            22: { type: 'info', title: "Aardappelkelder", text: "Hier werden enorme hoeveelheden voedsel bewaard, terwijl gevangenen buiten stierven van de honger.", extra: "In 1941 werd deze kelder tijdelijk gebruikt voor massa-executies." },
+            23: { type: 'long', title: "De Obelisk", text: "DDR-monument van 40 meter. Focus op politiek verzet. De 18 rode driehoeken symboliseren de landen van de slachtoffers.", extra: "Discussie: Is dit een monument voor de slachtoffers of voor de DDR?", walking: "Loop naar Station Z (#27)." },
+            24: { type: 'info', title: "Technische Opslag", text: "Magazijnen voor onderhoudsmaterialen. Zelfs de kleinste schroef werd hier geregistreerd in de nazi-boekhouding." },
+            25: { type: 'info', title: "Industriehof", text: "Het gebied waar de wapenindustrie gebruik maakte van dwangarbeid. Bedrijven als Heinkel produceerden hier voor de oorlog.", extra: "Vernietiging door werk vond hier dagelijks plaats." },
+            26: { type: 'long', title: "As-stortplaats", text: "Hier werd de as uit de crematoria gedumpt. Duizenden mensen zijn hier letterlijk tot stof vergaan.", walking: "Loop naar het witte dak (#27)." },
+            27: { type: 'long', title: "Station Z", text: "De vernietigingsplek: gaskamer en crematoria. 'Z' was de laatste letter: het absolute eindpunt van een leven.", extra: "In 1941 werden hier 10.000 Sovjet-krijgsgevangenen in sneltempo vermoord.", walking: "Loop naar #29." },
+            28: { type: 'info', title: "Executieplaats", text: "De kuil achter Station Z waar dagelijks individuele executies plaatsvonden door middel van een nekschot.", extra: "De SS noemde dit 'special treatment'." },
+            29: { type: 'short', title: "Toren E", text: "Kijk over het hek: de stad Oranienburg is pijnlijk dichtbij. Iedereen kon de rook zien en ruiken.", walking: "Loop naar #32." },
+            30: { type: 'short', title: "Sonderlager", text: "Afgeschermd kamp voor prominente gevangenen. Later de basis voor het Sovjet Speciale Kamp.", walking: "Loop naar #32." },
+            31: { type: 'info', title: "Lijkenhuis", text: "Koele ruimte waar lichamen werden verzameld voordat ze werden verbrand in Station Z.", extra: "Soms lagen de lichamen hier tot aan het plafond opgestapeld." },
+            32: { type: 'long', title: "Massagraven", text: "Herdenking van de 12.000 doden uit het Sovjet Speciale Kamp (1945-1950). Een vergeten laag van geschiedenis.", walking: "Loop naar #34." },
+            33: { type: 'info', title: "Buitenmuur", text: "De fysieke grens van beton. Het scheidde de 'beschaving' van de wetteloosheid van het kamp.", extra: "De muur was voorzien van schrikdraad en hondenpatrouilles." },
+            34: { type: 'long', title: "Ziekenboeg (Revier)", text: "Plek van medische misdaden. Geen genezing, maar experimenten op levende mensen door nazi-artsen.", extra: "Anekdote: Gevangen-verplegers probeerden in het geheim levens te redden.", walking: "Keer terug naar de uitgang." },
+            35: { type: 'info', title: "Pathologie", text: "Hier werden de lichamen van gevangenen na experimenten ontleed voor 'onderzoek'.", extra: "Gouden tanden werden hier systematisch verwijderd voor de SS-kas." },
+            36: { type: 'info', title: "Ondergronds Mortuarium", text: "Een verborgen ruimte voor de opslag van lijken. Het toont de schaal van de dagelijkse sterfte in het kamp.", extra: "Het was hier altijd ijskoud, zelfs in de zomer." },
+            37: { type: 'info', title: "Transformatorhuis", text: "De elektriciteitsvoorziening voor het dodelijke hekwerk. Het kloppend hart van de omheining." },
+            38: { type: 'info', title: "Barak 38-B", text: "Deel van het Joodse lager. Hier leefden gevangenen die moesten werken in het Klinkerwerk.", extra: "Het sterftecijfer was hier extreem hoog." },
+            39: { type: 'info', title: "Barak 39-B", text: "Huisvesting voor gevangenen die werden ingezet bij de administratie. Zij hadden een marginaal betere kans op overleving.", extra: "Zij zagen de dodencijfers elke dag groeien." },
+            40: { type: 'info', title: "Wachttoren G", text: "Een van de torens die de achterkant van het kamp bewaakten. Het uitzicht bood een panoramisch beeld van de ellende.", extra: "Bewakers hadden hier bevel om op alles te schieten wat bewoog." }
         };
-    }
-}
+
+        function renderGrid() {
+            const grid = document.getElementById('loc-grid');
+            for(let i=1; i<=40; i++) {
+                const btn = document.createElement('button');
+                btn.className = `loc-btn btn-${locations[i].type}`;
+                btn.innerText = i;
+                btn.onclick = () => showDetail(i);
+                grid.appendChild(btn);
+            }
+        }
+
+        function showDetail(id) {
+            const loc = locations[id];
+            const ui = document.getElementById('detail-ui');
+            ui.innerHTML = `
+                <button onclick="hideDetail()" class="mb-6 bg-slate-800 text-blue-400 font-bold text-xs px-6 py-3 rounded-full uppercase tracking-widest border border-slate-700">← Kaart</button>
+                <div class="glass-card animate-up">
+                    <h2 class="text-3xl font-black mb-4">${loc.title} <span class="text-slate-800 text-6xl block opacity-40">#${id}</span></h2>
+                    <div class="text-lg leading-relaxed text-slate-200 mb-10 space-y-4">
+                        <p>${loc.text}</p>
+                        ${loc.extra ? `<div class="bg-blue-600/30 border-l-4 border-blue-500 p-4 italic text-sm text-blue-50 rounded-r-xl">${loc.extra}</div>` : ''}
+                    </div>
+                    ${loc.walking ? `<div class="bg-blue-600 p-5 rounded-2xl font-bold text-white shadow-lg text-sm">ROUTE: ${loc.walking}</div>` : ''}
+                </div>`;
+            ui.style.display = 'block';
+            window.scrollTo(0,0);
+        }
+
+        function hideDetail() { document.getElementById('detail-ui').style.display = 'none'; }
+
+        function showGuide() {
+            const ui = document.getElementById('detail-ui');
+            ui.innerHTML = `
+                <button onclick="hideDetail()" class="mb-6 bg-slate-800 text-blue-400 font-bold text-xs px-6 py-3 rounded-full uppercase tracking-widest">← Terug</button>
+                <div class="glass-card">
+                    <h2 class="text-2xl font-black mb-6 uppercase tracking-tighter">Handleiding</h2>
+                    <div class="space-y-6 text-sm text-slate-300">
+                        <p>● <strong class="text-yellow-500">Goud:</strong> Focuspunten (2-3 min). Hier doe je het grote verhaal.</p>
+                        <p>● <strong class="text-blue-500">Blauw:</strong> Routepunten (1 min). Voor oriëntatie en flow.</p>
+                        <p>● <strong class="text-slate-400">Grijs:</strong> Info. Voor specifieke vragen over gebouwen.</p>
+                        <div class="border-t border-slate-700 pt-4 italic">Tip: Vraag bij Station Z om 30 seconden stilte voordat je spreekt.</div>
+                    </div>
+                </div>`;
+            ui.style.display = 'block';
+        }
+
+        renderGrid();
+    </script>
+</body>
+</html>
