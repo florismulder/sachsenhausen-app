@@ -1,0 +1,134 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Style-Type" content="text/css">
+  <title></title>
+  <meta name="Generator" content="Cocoa HTML Writer">
+  <meta name="CocoaVersion" content="2685.3">
+  <style type="text/css">
+    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+  </style>
+</head>
+<body>
+<p class="p1">&lt;!DOCTYPE html&gt;</p>
+<p class="p1">&lt;html lang="nl"&gt;</p>
+<p class="p1">&lt;head&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;meta charset="UTF-8"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;title&gt;Sachsenhausen Gids App&lt;/title&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;script src="https://cdn.tailwindcss.com"&gt;&lt;/script&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;style&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.location-card { transition: transform 0.2s; }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.location-card:active { transform: scale(0.95); }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/style&gt;</p>
+<p class="p1">&lt;/head&gt;</p>
+<p class="p1">&lt;body class="bg-gray-100 text-gray-900 min-h-screen"&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;header class="bg-slate-800 text-white p-4 shadow-md sticky top-0 z-10 flex justify-between items-center"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;h1 class="font-bold text-lg"&gt;Sachsenhausen Gids&lt;/h1&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;button onclick="showMenu()" class="bg-slate-700 px-3 py-1 rounded text-sm border border-slate-500"&gt;Menu&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/header&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;main id="app-content" class="p-4 max-w-2xl mx-auto"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/main&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;script&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>// De data structuur</p>
+<p class="p1"><span class="Apple-converted-space">        </span>const locations = {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>2: { title: "Modellen (Model)", type: "long", route: true, next: 3,<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">                 </span>text: "Kijk naar dit model van het kamp. De driehoeksvorm was een bewuste keuze voor totale controle vanuit Toren A. Het panopticon-principe zorgde ervoor dat gevangenen zich altijd bekeken voelden.",<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">                 </span>extra: "Detail: De SS presenteerde dit als een 'modern' kamp, terwijl gevangenen het zelf in mensonterende omstandigheden moesten bouwen.",</p>
+<p class="p1"><span class="Apple-converted-space">                 </span>sources: ["Gedenkstätte Sachsenhausen Officiële site-plan", "Günter Morsch - Sachsenhausen 1936-1945"],</p>
+<p class="p1"><span class="Apple-converted-space">                 </span>walking: "Loop nu richting de hoofdweg (Camp Street) die het SS-terrein scheidt van het gevangenenkamp." },</p>
+<p class="p1"><span class="Apple-converted-space">            </span>3: { title: "Camp Street", type: "short", route: true, next: 4,<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">                 </span>text: "Dit is de Lagerstraße. Hier werden gevangenen binnengebracht. Het scheidt de wereld van de daders (SS) van de wereld van de slachtoffers.",<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">                 </span>sources: ["Site Plan Sachsenhausen"],</p>
+<p class="p1"><span class="Apple-converted-space">                 </span>walking: "Loop door naar het SS-troepenkwartier aan de rechterkant." },</p>
+<p class="p1"><span class="Apple-converted-space">            </span>// Overige locaties (placeholders voor nu)</p>
+<p class="p1"><span class="Apple-converted-space">            </span>4: { title: "SS Troop Camp", type: "short", route: true, next: 6, text: "Informatie over het SS-kamp...", sources: ["Bronvermelding volgt"], walking: "Loop naar het administratieve hoofdkwartier." },</p>
+<p class="p1"><span class="Apple-converted-space">            </span>6: { title: "Command Headquarters", type: "short", route: true, next: 7, text: "Informatie over het hoofdkwartier...", sources: ["Bronvermelding volgt"], walking: "Loop naar de woning van de commandant." },</p>
+<p class="p1"><span class="Apple-converted-space">            </span>// ... (Hier vullen we alle 40 nummers aan)</p>
+<p class="p1"><span class="Apple-converted-space">        </span>};</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>// Functie om alle 40 nummers te genereren voor het menu</p>
+<p class="p1"><span class="Apple-converted-space">        </span>function generateFullMenu() {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>let html = `&lt;h2 class="text-xl font-bold mb-4"&gt;Alle Locaties&lt;/h2&gt;&lt;div class="grid grid-cols-4 gap-2"&gt;`;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>for (let i = 1; i &lt;= 40; i++) {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>const isRoute = locations[i] &amp;&amp; locations[i].route;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>html += `&lt;button onclick="loadLocation(${i})" class="${isRoute ? 'bg-blue-600 text-white' : 'bg-white text-gray-600'} border p-3 rounded shadow-sm font-bold"&gt;${i}&lt;/button&gt;`;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}</p>
+<p class="p1"><span class="Apple-converted-space">            </span>html += `&lt;/div&gt;&lt;p class="mt-4 text-sm text-gray-500"&gt;* Blauw = Onderdeel van de route&lt;/p&gt;`;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>return html;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>function showMenu() {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('app-content').innerHTML = generateFullMenu();</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>function loadLocation(id) {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const loc = locations[id];</p>
+<p class="p1"><span class="Apple-converted-space">            </span>let html = "";</p>
+<p class="p2"><span class="Apple-converted-space">            </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>if (!loc) {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>html = `&lt;div class="bg-white p-6 rounded-lg shadow"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;h2 class="text-2xl font-bold mb-2"&gt;Locatie ${id}&lt;/h2&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;p class="text-gray-700"&gt;Beknopte informatie over dit punt (nog in te vullen)...&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;button onclick="showMenu()" class="mt-6 w-full bg-slate-800 text-white font-bold py-3 rounded"&gt;Terug naar menu&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;/div&gt;`;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>} else {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>html = `&lt;div class="bg-white p-6 rounded-lg shadow"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;div class="flex justify-between items-start mb-4"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>&lt;span class="bg-slate-200 text-slate-800 px-2 py-1 rounded text-xs font-bold uppercase"&gt;${loc.type === 'long' ? 'Lange stop' : 'Korte stop'}&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>&lt;span class="text-slate-400 font-bold text-xl"&gt;#${id}&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;h2 class="text-2xl font-bold mb-4"&gt;${loc.title}&lt;/h2&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;div class="prose text-gray-800 leading-relaxed space-y-4"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>&lt;p&gt;${loc.text}&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>${loc.extra ? `&lt;div class="bg-amber-50 border-l-4 border-amber-400 p-3 italic font-medium"&gt;${loc.extra}&lt;/div&gt;` : ''}</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;/div&gt;</p>
+<p class="p2"><span class="Apple-converted-space">                            </span></p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;div class="mt-8 pt-6 border-t border-gray-100"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>&lt;button onclick="finishLocation(${id})" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-4 rounded-xl shadow-lg transition-colors"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                    </span>IK BEN KLAAR</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;div id="next-step-${id}" class="hidden mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>&lt;p class="text-sm font-bold text-blue-800 mb-1"&gt;Volgende stap:&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>&lt;p class="text-blue-900"&gt;${loc.walking}&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>&lt;button onclick="loadLocation(${loc.next})" class="mt-3 w-full bg-blue-600 text-white py-2 rounded font-bold"&gt;Ga naar #${loc.next}&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;div class="mt-10"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>&lt;h3 class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2"&gt;Bronnen voor de docent&lt;/h3&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>&lt;ul class="text-sm text-gray-500 list-disc ml-4"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                    </span>${loc.sources.map(s =&gt; `&lt;li&gt;${s}&lt;/li&gt;`).join('')}</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>&lt;/ul&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;/div&gt;`;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}</p>
+<p class="p2"><span class="Apple-converted-space">            </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('app-content').innerHTML = html;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>window.scrollTo(0,0);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>function finishLocation(id) {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const nextDiv = document.getElementById(`next-step-${id}`);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>if (nextDiv) {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>nextDiv.classList.remove('hidden');</p>
+<p class="p1"><span class="Apple-converted-space">                </span>nextDiv.scrollIntoView({ behavior: 'smooth' });</p>
+<p class="p1"><span class="Apple-converted-space">            </span>} else {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>showMenu();</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>// Start de app op het menu</p>
+<p class="p1"><span class="Apple-converted-space">        </span>showMenu();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/script&gt;</p>
+<p class="p1">&lt;/body&gt;</p>
+<p class="p1">&lt;/html&gt;</p>
+</body>
+</html>
