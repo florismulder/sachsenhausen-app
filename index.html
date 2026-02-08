@@ -3,41 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Sachsenhausen Gids</title>
+    <title>Sachsenhausen Gids Applicatie</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #0f172a; color: #f1f5f9; }
+        body { font-family: 'Inter', sans-serif; background-color: #0f172a; color: #f1f5f9; overflow-x: hidden; }
         .map-viewport { 
             position: relative; 
             width: 100%; 
-            height: 450px; 
+            height: 400px; 
             background: #1e293b; 
             border-radius: 24px; 
             border: 2px solid #334155; 
-            overflow: auto;
+            overflow: scroll;
             -webkit-overflow-scrolling: touch;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
         }
         .map-image-wrapper { 
             position: relative; 
-            width: 1000px; 
-            height: 1000px;
-            background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/b/b3/Lageplan_KZ_Sachsenhausen.png/800px-Lageplan_KZ_Sachsenhausen.png');
-            background-size: contain;
-            background-repeat: no-repeat;
+            width: 800px;
+            height: 800px;
+            background-image: url('plattegrond_sachsenhausen.jpg'); /* Verwijst nu naar jouw geüploade foto */
+            background-size: cover;
             background-position: center;
         }
         .map-pin { 
             position: absolute; 
-            width: 36px; height: 36px; 
+            width: 34px; height: 34px; 
             transform: translate(-50%, -50%); 
             border-radius: 50%; 
             display: flex; items-center; justify-content: center; 
             font-weight: 900; font-size: 14px; border: 2px solid white; 
-            box-shadow: 0 4px 15px rgba(0,0,0,0.6);
-            z-index: 20;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            z-index: 10;
         }
-        .pin-route { background: #2563eb; color: white; scale: 1.1; }
-        .pin-other { background: rgba(30, 41, 59, 0.8); color: #94a3b8; border-color: #475569; }
+        .pin-route { background: #2563eb; color: white; scale: 1.1; z-index: 20; }
+        .pin-other { background: rgba(71, 85, 105, 0.9); color: #cbd5e1; border-color: #475569; }
         .glass-card { background: rgba(30, 41, 59, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 24px; }
     </style>
 </head>
@@ -57,22 +57,37 @@
     <script>
         const routeStops = [2, 3, 4, 6, 7, 10, 11, 12, 13, 15, 16, 17, 21, 23, 26, 27, 29, 30, 32, 34];
 
-        // Coördinaten gecorrigeerd voor de Wikimedia kaart
+        // Coördinaten aangepast aan de 800x800 pixel plattegrond in <IMAGE_0>
         const pins = {
-            2: {x: 480, y: 880}, 3: {x: 480, y: 820}, 4: {x: 600, y: 820}, 6: {x: 520, y: 780}, 
-            7: {x: 600, y: 760}, 10: {x: 480, y: 720}, 11: {x: 350, y: 720}, 12: {x: 480, y: 620},
-            13: {x: 480, y: 540}, 15: {x: 350, y: 540}, 16: {x: 350, y: 480}, 17: {x: 610, y: 540},
-            21: {x: 480, y: 440}, 23: {x: 480, y: 340}, 26: {x: 480, y: 220}, 27: {x: 480, y: 180},
-            29: {x: 480, y: 50}, 30: {x: 600, y: 200}, 32: {x: 400, y: 150}, 34: {x: 680, y: 440}
+            1: {x: 480, y: 790}, 2: {x: 400, y: 775}, 3: {x: 420, y: 720}, 4: {x: 520, y: 720},
+            6: {x: 450, y: 680}, 7: {x: 550, y: 660}, 10: {x: 410, y: 620}, 11: {x: 320, y: 620},
+            12: {x: 410, y: 530}, 13: {x: 410, y: 460}, 15: {x: 320, y: 460}, 16: {x: 320, y: 410},
+            17: {x: 500, y: 460}, 21: {x: 410, y: 360}, 23: {x: 410, y: 280}, 26: {x: 410, y: 160},
+            27: {x: 410, y: 110}, 29: {x: 490, y: 50}, 30: {x: 600, y: 150}, 32: {x: 320, y: 110},
+            34: {x: 600, y: 360}
         };
 
         const locations = {
-            2: { title: "De Modellen", type: "long", next: 3, identify: "Zaal met kamp-modellen in het bezoekerscentrum.", text: "Begin bij dit model. Sachsenhausen was geen 'toeval', maar een bewuste geometrische creatie. De driehoek stond voor totale controle.", extra: "Vraag voor studenten: Wat doet deze perfecte vorm met je gevoel van vrijheid?", sources: ["Morsch: Architectuur van de Macht"], walking: "Loop naar buiten de Lagerstraße op." },
-            3: { title: "Camp Street", type: "short", next: 4, identify: "De brede laan richting de kampingang.", text: "Dit was de scheiding. Links de SS, rechts de administratie. Voor gevangenen de weg naar het onbekende.", sources: ["Site Plan"], walking: "Loop door naar de SS-kazerne aan de rechterkant (#4)." },
-            10: { title: "Toren A", type: "long", next: 11, identify: "De centrale toegangspoort met de wachttoren.", text: "De poort naar de hel. Let op de tekst 'Arbeit macht frei'. Het was bedoeld om hoop te geven die er niet was.", extra: "De omgekeerde 'B' in ARBEIT wordt vaak gezien als een teken van verzet door gevangen-smeden.", sources: ["Gedenkstätte Archief"], walking: "Kijk direct naar het beveiligingssysteem naast de toren (#11)." },
-            27: { title: "Station Z", type: "long", next: 29, identify: "Het witte dak over de fundamenten van het crematorium.", text: "Hier eindigde de alfabetische lijst van locaties, en voor velen het leven. De plek van gaskamers en ovens.", extra: "In 1941 werden hier 10.000 Sovjet-krijgsgevangenen in sneltempo vermoord via een geniepige meetlat-installatie.", sources: ["Expositie Murder & Mass Murder"], walking: "Loop nu naar de noordelijke punt van de driehoek, Toren E (#29)." },
-            29: { title: "Toren E", type: "short", next: 30, identify: "De toren in de verste punt van de driehoek.", text: "Hier ziet u hoe dicht het kamp bij de bewoonde wereld lag. De stad Oranienburg was pijnlijk nabij.", sources: ["Town and Camp exhibition"], walking: "Loop naar het Sonderlager/Zone II aan de oostzijde (#30)." },
-            34: { title: "De Ziekenboeg", type: "long", next: 2, identify: "De stenen barakken R1 en R2 aan de rand.", text: "De plek van medische misdaden. Experimenten op mensen waren hier de gruwelijke standaard.", sources: ["Medical Crimes Report"], walking: "De rondleiding eindigt hier. Loop terug naar de hoofduitgang." }
+            2: { title: "De Modellen", type: "long", next: 3, identify: "Zaal met kamp-modellen in het bezoekerscentrum.", text: "Begin bij dit model. Sachsenhausen was geen 'toeval', maar een bewuste geometrische creatie. De driehoek stond voor totale controle. Dit was het 'modèl-kamp' van de SS.", extra: "Vraag voor studenten: Wat doet deze perfecte, symmetrische vorm met je gevoel van vrijheid of onvrijheid?", sources: ["Günter Morsch: Architectuur van de Macht", "Gedenkstätte Catalogus"], walking: "Verlaat het gebouw, loop naar buiten de brede laan op (Camp Street)." },
+            3: { title: "Camp Street", type: "short", next: 4, identify: "De brede, rechte laan richting de kampingang.", text: "Dit was de scheiding. Links de SS, rechts de administratiegebouwen. Voor gevangenen was dit de symbolische laatste weg naar 'vrijheid'.", sources: ["Site Plan Sachsenhausen"], walking: "Loop door naar de kazerne van de SS aan de rechterkant (#4)." },
+            4: { title: "SS Troop Camp", type: "short", next: 6, identify: "De stenen barakken rechts van Camp Street.", text: "Hier trainden de 'Totenkopf' eenheden. De plek waar jonge SS-mannen werden geïndoctrineerd en klaargestoomd voor terreur. De nabijheid van de stad Oranienburg betekende dat dit geen geheim was.", sources: ["Sachsenhausen Memorial Research"], walking: "Loop door naar het grote administratieve hoofdkwartier (#6)." },
+            6: { title: "Command Headquarters", type: "short", next: 7, identify: "Groot, centraal gelegen administratiegebouw.", text: "Het administratieve hart van het terreur-systeem. Vanuit dit gebouw werden alle orders voor het kamp gegeven en de boekhouding van de vernietiging bijgehouden.", sources: ["Gedenkstätte Dossier"], walking: "Loop naar het huis van de kampcommandant (#7)." },
+            7: { title: "Commandant's Villa", type: "short", next: 10, identify: "Villa achter het hoofdkwartier, met tuin.", text: "Het woonhuis van het kwaad. Kampcommandanten woonden hier met hun families, slechts meters verwijderd van de wreedheden. Een bizarre parallelle wereld.", sources: ["The Private Side of Terror"], walking: "Loop terug naar de hoofdweg en dan richting de grote poort (Toren A)." },
+            10: { title: "Toren A (Hoofdingang)", type: "long", next: 11, identify: "De grote wachttoren met de toegangspoort.", text: "Hier staat 'Arbeit macht frei'. Het was het zenuwcentrum van de SS-bewaking binnen de omheining. De poort naar de hel. Alles werd van hieruit geregisseerd, elke beweging van gevangenen gemonitord.", extra: "Let op de ondersteboven geplaatste 'B' in ARBEIT; gevangenen hebben deze uit protest omgekeerd geplaatst als een klein, gevaarlijk teken van verzet.", sources: ["Gedenkstätte Archief", "Sachsenhausen: Everyday life and Resistance"], walking: "Kijk direct rechts en links van de toren naar het hekwerk en de 'dodenstrook' (#11)." },
+            11: { title: "Security System", type: "long", next: 12, identify: "Hekken, wachttorens en de dodenstrook.", text: "De ultieme barrière: een elektrische omheining, wachttorens met machinegeweren en de 'dodenstrook' - wie deze betrad werd zonder waarschuwing neergeschoten. Fysieke en psychologische terreur.", extra: "Anekdote: Gevangenen die alle hoop hadden verloren, 'renden in het hek' als vorm van wanhoop en zelfmoord.", sources: ["Expositie 'Security' Sachsenhausen"], walking: "Loop nu het grote halfronde plein op: de Appèlplaats (#12)." },
+            12: { title: "Appèlplaats", type: "short", next: 13, identify: "Het grote halfronde plein direct na de poort.", text: "Urenlang stilstaan, in weer en wind, voor dagelijkse tellingen. Wie omviel, werd geslagen. Dit was de plek waar de nazi's de individuele menselijke wil braken en vernederden.", sources: ["Archief Sachsenhausen", "Günter Morsch: Die Konzentrationslager"], walking: "Loop naar de gemarkeerde testbaan op de grond (#13)." },
+            13: { title: "Schoentestbaan", type: "short", next: 15, identify: "Gemarkeerde baan met verschillende ondergronden.", text: "Een bizarre martelgang: gevangenen moesten hier dagelijks 40 kilometer rennen over stenen, grind en zand om legerlaarzen te testen. 'Vernietiging door werk'.", sources: ["Anne-Kathrin Fromm, 'Die Schuhprüfstrecke'"], walking: "Loop nu naar de houten barakken aan de linkerzijde (Het Kleine Lager, #15)." },
+            15: { title: "Barak 38 (Joods Lager)", type: "long", next: 16, identify: "De houten barak met sporen van brandstichting.", text: "Onderdeel van het 'Kleine Lager'. Na de Kristallnacht werden hier duizenden Joodse mannen opeengepakt. Overvol, onhygiënisch en de laagste status. Een plek van extreme vernedering.", extra: "In 1992 staken neo-nazi's deze barak in brand. De littekens van de brand zijn nog zichtbaar als een pijnlijke herinnering dat de geschiedenis doorleeft.", sources: ["Gedenkstätte Sachsenhausen, 'The Jewish Prisoners'"], walking: "Loop naar de direct naastgelegen Barak 39 (#16)." },
+            16: { title: "Barak 39 (Dagelijks Leven)", type: "long", next: 17, identify: "De herbouwde houten barak, nu een museum.", text: "Stap in de ruimte: 400 tot 500 mannen in een ruimte voor de helft. Het gevecht om brood, de kampleiding door Kapos en de totale afwezigheid van privacy bepaalden hier het leven.", extra: "Anekdote: Ondanks alles probeerden gevangenen menselijkheid te vinden in kleine daden van verzet, het delen van verhalen of het maken van miniaturen.", sources: ["Multimedia-expositie 'Everyday Life in Sachsenhausen'"], walking: "Verlaat de barakken en loop naar het stenen gevangenisgebouw (Zellenbau, #17)." },
+            17: { title: "De Gevangenis (Zellenbau)", type: "long", next: 21, identify: "Groot, stenen gebouw met tralies en kleine ramen.", text: "Het kamp binnen het kamp. De plek van de Gestapo. Hier werden verzetsstrijders, geestelijken en 'prominente' gevangenen vastgehouden, gemarteld en geïsoleerd. Een oord van totale wanhoop.", extra: "Hier zat Georg Elser, die in 1939 bijna Hitler doodde. De nazi's hielden hem in leven tot vlak voor het einde van de oorlog, waarna hij alsnog werd geëxecuteerd.", sources: ["Expositie 'The Prison within the Concentration Camp'", "Peter Hoffmann: Georg Elser"], walking: "Loop nu richting de centrale keuken en wasserij gebouwen (#21)." },
+            21: { title: "De Wasserij", type: "short", next: 23, identify: "Groot, stevig stenen gebouw vlakbij de keuken.", text: "Dit was de wasserij. Paradoxaal genoeg een symbool van 'hygiëne' voor de SS, maar in werkelijkheid werden kleding en beddengoed zelden gewassen. Toch was stromend water hier een zeldzame luxe.", sources: ["Site Guide Sachsenhausen"], walking: "Loop nu richting de enorme obelisk in het midden van het terrein (#23)." },
+            23: { title: "De Obelisk (DDR-monument)", type: "long", next: 26, identify: "De enorme, 40 meter hoge zuil met rode driehoeken.", text: "Dit monument uit 1961 toont de DDR-herdenkingscultuur. De focus ligt hier op het communistische verzet, gesymboliseerd door de rode driehoeken. Een heroïsche stijl, anders dan de rest van het kamp.", extra: "Vraag voor studenten: Waarom denk je dat de DDR koos voor zo'n gigantisch monument? Welke boodschap wilden ze hiermee uitdragen?", sources: ["Günter Morsch, 'Sachsenhausen National Memorial'"], walking: "Loop achter de obelisk langs naar de fundamenten van Station Z (#27)." },
+            26: { title: "Station Z (Fundamenten)", type: "long", next: 27, identify: "Betonnen fundamenten achter de obelisk.", text: "U staat op de fundamenten van 'Station Z', de meest gruwelijke plek. Dit was de 'fabriek van de dood'. De naam was SS-cynisme: de laatste letter van het alfabet, het einde van de weg.", sources: ["Expositie Murder and Mass Murder"], walking: "Loop door naar het grote witte beschermdak dat over het complex is gebouwd (#27)." },
+            27: { title: "Station Z (Massamoord)", type: "long", next: 29, identify: "Het grote witte beschermdak over de fundamenten.", text: "Hier stond het crematorium, de gaskamer en een brute nekschot-installatie vermomd als meetlat. Een plek van industriële vernietiging. Hier werden in 1941 meer dan 10.000 Sovjet-krijgsgevangenen in enkele weken vermoord.", extra: "Cruciaal feit: De SS speelde harde marsmuziek om de geluiden van de executies te maskeren voor de buitenwereld.", sources: ["Expositie Murder and Mass Murder", "Musial, Massenmord Sachsenhausen"], walking: "Loop nu naar de noordelijke punt van de driehoek, Toren E (#29)." },
+            29: { title: "Toren E (Kampgrens)", type: "short", next: 30, identify: "De wachttoren in de verste punt van de driehoek.", text: "Vanaf hier zie je hoe dicht het kamp bij de bewoonde wereld lag. De huizen van Oranienburg waren pijnlijk dichtbij. Het kwaad vond plaats in het volle zicht.", sources: ["Expositie 'Town and Camp'"], walking: "Loop naar het 'Sonderlager' / 'Zone II' aan de oostzijde (#30)." },
+            30: { title: "Sonderlager (Zone II)", type: "short", next: 32, identify: "Afgegrensd gebied buiten de hoofddriehoek.", text: "Een speciaal kamp voor 'speciale' gevangenen: vaak prominente politieke figuren, maar ook gevangenen die in het geheim moesten verdwijnen. Een extra laag van isolatie.", sources: ["Sachsenhausen Speziallager"], walking: "Loop nu naar de massagraven van het Sovjet Speciale Kamp (#32)." },
+            32: { title: "Massagraven (Sovjetkamp)", type: "long", next: 34, identify: "Grote, sobere gedenkstenen met beplanting.", text: "Na 1945 werd Sachsenhausen een Sovjet Goelag-kamp. Duizenden stierven hier door honger en ziekte. Deze massagraven herdenken de slachtoffers van die tweede terreurperiode.", extra: "Discussiepunt: Hoe verandert het feit dat Sachsenhausen ook een Sovjetkamp was, je begrip van de geschiedenis van deze plek?", sources: ["Stiftung Gedenkstätten", "Expositie Sowjetisches Speziallager Nr. 7"], walking: "Loop nu naar de stenen barakken R1/R2 (de ziekenboeg, #34)." },
+            34: { title: "De Ziekenboeg (Medische Misdaden)", type: "long", next: 2, identify: "De stenen barakken R1 en R2 aan de rand.", text: "De ironisch genaamde 'ziekenboeg'. In werkelijkheid een plek van medische misdaden. Gevangenen werden gebruikt als proefkonijnen voor experimenten met medicijnen of om de effecten van mishandeling te bestuderen.", extra: "Anekdote: Sommige gevangen artsen probeerden in het geheim levens te redden met minimale middelen, een gevaarlijk verzet.", sources: ["Medical Crimes Report", "Forgotten Doctors of Sachsenhausen"], walking: "U bent aan het einde van de officiële route. Loop terug naar het bezoekerscentrum bij de hoofduitgang (#2)." }
         };
 
         function showMenu() {
@@ -96,7 +111,7 @@
                 </div>
             `;
             document.getElementById('app-content').innerHTML = html;
-            // Scroll naar onderkant kaart (startpunt)
+            // Scroll de kaart naar de startpositie (onderkant)
             const vp = document.querySelector('.map-viewport');
             if(vp) { vp.scrollTop = 600; vp.scrollLeft = 250; }
         }
@@ -124,14 +139,19 @@
                         <h2 class="text-4xl font-black text-white leading-tight">${loc.title}</h2>
                     </div>
 
-                    <div class="bg-blue-600/20 border border-blue-500/30 p-4 rounded-2xl mb-6">
-                        <p class="text-[10px] font-black text-blue-300 uppercase tracking-widest mb-1">Herkenbaar aan:</p>
-                        <p class="text-sm font-bold text-white">${loc.identify}</p>
+                    <div class="bg-blue-600/20 border border-blue-500/30 p-4 rounded-2xl mb-6 flex items-start">
+                        <div class="bg-blue-500 p-2 rounded-lg mr-4 mt-1 shadow-lg shadow-blue-500/30">
+                            <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20"><path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/><path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/></svg>
+                        </div>
+                        <div>
+                            <p class="text-[10px] font-black text-blue-300 uppercase tracking-widest leading-none mb-1">Herkenbaar aan:</p>
+                            <p class="text-sm font-bold text-white">${loc.identify}</p>
+                        </div>
                     </div>
 
-                    <div class="glass-card p-6 mb-6">
-                        <div class="text-lg leading-relaxed text-slate-100 space-y-6 font-medium">
-                            <p>${loc.text}</p>
+                    <div class="glass-card p-6 mb-6 shadow-2xl">
+                        <div class="text-[1.15rem] leading-relaxed text-slate-100 space-y-6 font-medium">
+                            ${loc.text.split('\n').map(p => `<p>${p}</p>`).join('')}
                             ${loc.extra ? `<div class="bg-blue-900/40 border-l-4 border-blue-500 p-4 italic text-blue-100 rounded-r-xl text-sm">${loc.extra}</div>` : ''}
                         </div>
                         
