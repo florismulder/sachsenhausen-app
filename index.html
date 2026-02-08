@@ -6,159 +6,86 @@
     <title>Sachsenhausen Gids</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #0f172a; color: #f1f5f9; overflow-x: hidden; }
-        
-        /* Zone Selector Grid */
-        .zone-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px; }
-        .zone-card { 
-            background: #1e293b; border: 2px solid #334155; border-radius: 16px; padding: 20px; 
-            text-align: center; transition: all 0.2s; 
+        body { font-family: 'Inter', sans-serif; background-color: #0f172a; color: #f1f5f9; }
+        .zone-card { background: #1e293b; border: 2px solid #334155; border-radius: 20px; transition: all 0.2s; position: relative; overflow: hidden; }
+        .zone-card:active { transform: scale(0.98); background: #2563eb; }
+        .map-view { 
+            position: relative; width: 100%; aspect-ratio: 1/1; 
+            background-color: #fff; border-radius: 24px; border: 4px solid #1e293b;
+            background-size: contain; background-repeat: no-repeat; background-position: center;
         }
-        .zone-card:active { transform: scale(0.95); background: #2563eb; }
-
-        /* Zoom View */
-        .zoom-viewport { 
-            position: relative; width: 100%; height: 500px; 
-            background: #fff; border-radius: 24px; overflow: hidden; 
-            border: 4px solid #1e293b; display: none;
-        }
-        .zoom-container { 
-            position: absolute; width: 1200px; height: 1100px; 
-            background-image: url('plattegrond_site_sachsenhausen.png');
-            background-size: contain; background-repeat: no-repeat;
-            transition: transform 0.3s ease-out;
-        }
-
-        /* Pins */
         .map-pin { 
-            position: absolute; width: 44px; height: 44px; transform: translate(-50%, -50%); 
-            border-radius: 50%; border: 3px solid transparent; 
-            display: flex; items-center; justify-content: center; font-weight: 900;
+            position: absolute; width: 48px; height: 48px; transform: translate(-50%, -50%); 
+            border-radius: 50%; border: 3px solid white; display: flex; 
+            items-center; justify-content: center; font-weight: 900; font-size: 0px; /* Onzichtbaar over het cijfer */
         }
         .pin-long { border-color: #fbbf24; background: rgba(251, 191, 36, 0.3); box-shadow: 0 0 15px #fbbf24; }
         .pin-short { border-color: #3b82f6; background: rgba(59, 130, 246, 0.3); box-shadow: 0 0 15px #3b82f6; }
-        .pin-info { border-color: rgba(148, 163, 184, 0.4); }
-
-        .glass-card { background: rgba(30, 41, 59, 0.95); backdrop-filter: blur(10px); border-radius: 24px; }
+        .pin-info { border-color: #94a3b8; background: rgba(148, 163, 184, 0.1); }
     </style>
 </head>
 <body>
 
     <header class="bg-slate-900 border-b border-slate-700 p-4 sticky top-0 z-50 flex justify-between items-center">
-        <h1 class="font-black text-xl uppercase tracking-tighter" onclick="location.reload()">Sachsenhausen</h1>
+        <h1 class="font-black text-xl uppercase tracking-tighter" onclick="showMenu()">SACHSENHAUSEN</h1>
         <button onclick="showMenu()" class="bg-slate-700 px-4 py-2 rounded-full text-xs font-bold">ZONES</button>
     </header>
 
     <main id="app-content" class="p-4 max-w-xl mx-auto"></main>
 
     <script>
-        const locations = {
-            2: { title: "De Modellen", type: "long", next: 3, identify: "Zaal met kamp-modellen.", text: "Begin hier. De geometrie van de driehoek staat centraal.", walking: "Loop naar buiten de Lagerstraße op." },
-            10: { title: "Toren A", type: "long", next: 12, identify: "Grote wachttoren/ingang.", text: "De poort met 'Arbeit macht frei'.", walking: "Loop het kampterrein op." },
-            27: { title: "Station Z", type: "long", next: 32, identify: "Witte dak over de fundamenten.", text: "De vernietigingsplek van het kamp.", walking: "Loop naar de massagraven." }
-            // ... (alle andere data blijft hetzelfde)
-        };
-
-        // Zone instellingen (X, Y offsets om op het juiste deel te focussen)
         const zones = {
-            'entree': { name: '1. Entree & SS-Kamp', x: 0, y: -450 },
-            'kamp-links': { name: '2. Gevangeniskamp West', x: 150, y: -200 },
-            'kamp-rechts': { name: '3. Gevangeniskamp Oost', x: -300, y: -200 },
-            'vernietiging': { name: '4. Station Z & Industrie', x: 0, y: 50 }
+            1: { name: 'Entree & SS-Terrein', img: 'plattegrond_site_sachsenhausen_1.png', pins: { 1:{x:16,y:80}, 2:{x:20,y:85}, 3:{x:48,y:70}, 4:{x:74,y:48}, 5:{x:82,y:35}, 6:{x:71,y:38}, 7:{x:61,y:40}, 8:{x:76,y:20}, 9:{x:64,y:27} }},
+            2: { name: 'Poort & Kleine Lager', img: 'plattegrond_site_sachsenhausen_2.png', pins: { 10:{x:19,y:71}, 11:{x:29,y:60}, 12:{x:22,y:54}, 13:{x:35,y:49}, 14:{x:46,y:56}, 15:{x:49,y:38}, 16:{x:64,y:36}, 17:{x:47,y:21} }},
+            3: { name: 'Appèlplaats & Centrale Keuken', img: 'plattegrond_site_sachsenhausen_3.png', pins: { 18:{x:72,y:26}, 19:{x:60,y:56}, 20:{x:59,y:70}, 21:{x:46,y:68}, 22:{x:48,y:52}, 23:{x:25,y:22}, 24:{x:15,y:45}, 38:{x:21,y:74}, 39:{x:26,y:87} }},
+            4: { name: 'Station Z & Noordpunt', img: 'plattegrond_site_sachsenhausen_4.png', pins: { 29:{x:34,y:73}, 30:{x:66,y:62}, 31:{x:33,y:49}, 32:{x:39,y:31} }},
+            5: { name: 'Industriehof & Kampmuur', img: 'plattegrond_site_sachsenhausen_5.png', pins: { 25:{x:44,y:12}, 26:{x:42,y:21}, 27:{x:35,y:29}, 28:{x:35,y:40}, 40:{x:53,y:66}, 33:{x:75,y:87} }},
+            6: { name: 'Ziekenboeg (Revier)', img: 'plattegrond_site_sachsenhausen_6.png', pins: { 34:{x:28,y:43}, 36:{x:51,y:58}, 35:{x:27,y:76} }}
         };
 
-        // Nieuwe coördinaten voor de pins op de ingezoomde kaart (1200px breed)
-        const pins = {
-            1: {x: 580, y: 920, zone: 'entree'}, 2: {x: 605, y: 945, zone: 'entree'}, 
-            3: {x: 760, y: 840, zone: 'entree'}, 10: {x: 770, y: 530, zone: 'kamp-links'},
-            12: {x: 780, y: 440, zone: 'kamp-links'}, 27: {x: 350, y: 280, zone: 'vernietiging'}
+        const locations = {
+            2: { title: "De Modellen", type: "long", next: 3, text: "Begin hier. De geometrie van de driehoek staat centraal. Het panopticon-ontwerp zorgde voor totale controle.", sources: ["Morsch, 2014"] },
+            10: { title: "Toren A", type: "long", next: 12, text: "De poort met 'Arbeit macht frei'. Let op de omgekeerde B als teken van verzet.", sources: ["Gedenkstätte Sachsenhausen"] },
+            27: { title: "Station Z", type: "long", next: 32, text: "De plek van vernietiging: gaskamer en crematorium.", sources: ["Murder and Mass Murder"] },
+            // ... vul hier de overige teksten aan zoals we ze besproken hebben
         };
 
         function showMenu() {
-            let html = `
-                <div class="mb-6">
-                    <h2 class="text-2xl font-black italic">Selecteer je Zone</h2>
-                    <p class="text-slate-400 text-sm">Waar bevind je je op dit moment?</p>
-                </div>
-                <div class="zone-grid">
-                    ${Object.keys(zones).map(key => `
-                        <div onclick="zoomToZone('${key}')" class="zone-card">
-                            <p class="font-black text-blue-400 text-xs mb-2">ZONE</p>
-                            <p class="font-bold text-white leading-tight">${zones[key].name}</p>
-                        </div>
-                    `).join('')}
-                </div>
-            `;
+            let html = `<div class="mb-6"><h2 class="text-2xl font-black italic">Selecteer een Zone</h2></div>
+                        <div class="grid grid-cols-1 gap-4 pb-10">`;
+            Object.keys(zones).forEach(id => {
+                html += `<div onclick="loadZone(${id})" class="zone-card p-6 flex justify-between items-center">
+                            <span class="font-bold">${zones[id].name}</span>
+                            <div class="bg-blue-600/20 p-2 rounded-full"><svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"></path></svg></div>
+                         </div>`;
+            });
+            html += `</div>`;
             document.getElementById('app-content').innerHTML = html;
         }
 
-        function zoomToZone(zoneKey) {
-            const zone = zones[zoneKey];
-            let html = `
-                <div class="mb-4 flex justify-between items-center">
-                    <h2 class="text-xl font-black">${zone.name}</h2>
-                    <button onclick="showMenu()" class="text-blue-400 font-bold text-xs uppercase">Terug</button>
-                </div>
-                <div class="zoom-viewport" id="viewport" style="display:block;">
-                    <div class="zoom-container" id="container" style="transform: translate(${zone.x}px, ${zone.y}px);">
-                        ${Object.keys(pins).map(id => {
-                            const type = locations[id] ? locations[id].type : 'info';
-                            const pClass = type === 'long' ? 'pin-long' : (type === 'short' ? 'pin-short' : 'pin-info');
-                            return `<div onclick="loadLocation(${id})" class="map-pin ${pClass}" style="left:${pins[id].x}px; top:${pins[id].y}px;"></div>`;
-                        }).join('')}
-                    </div>
-                </div>
-                <p class="mt-4 text-center text-slate-500 text-xs italic">Sleep over de kaart om te verplaatsen</p>
-            `;
+        function loadZone(id) {
+            const zone = zones[id];
+            let html = `<button onclick="showMenu()" class="mb-4 text-blue-400 font-bold text-xs uppercase flex items-center"><svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M15 19l-7-7 7-7"></path></svg> Terug naar Zones</button>
+                        <div class="map-view mb-6" style="background-image: url('${zone.img}')">`;
+            Object.keys(zone.pins).forEach(pinId => {
+                const type = locations[pinId] ? locations[pinId].type : 'info';
+                html += `<div onclick="loadLocation(${pinId}, ${id})" class="map-pin pin-${type}" style="left:${zone.pins[pinId].x}%; top:${zone.pins[pinId].y}%;"></div>`;
+            });
+            html += `</div>`;
             document.getElementById('app-content').innerHTML = html;
-            setupDraggable();
         }
 
-        function setupDraggable() {
-            const container = document.getElementById('container');
-            const viewport = document.getElementById('viewport');
-            let isDragging = false, startX, startY, currentX, currentY;
-
-            // Simpele touch-drag logica voor mobiel
-            viewport.addEventListener('touchstart', e => {
-                isDragging = true;
-                const style = window.getComputedStyle(container);
-                const matrix = new WebKitCSSMatrix(style.transform);
-                startX = e.touches[0].clientX - matrix.m41;
-                startY = e.touches[0].clientY - matrix.m42;
-            });
-
-            viewport.addEventListener('touchmove', e => {
-                if (!isDragging) return;
-                currentX = e.touches[0].clientX - startX;
-                currentY = e.touches[0].clientY - startY;
-                container.style.transform = `translate(${currentX}px, ${currentY}px)`;
-            });
-
-            viewport.addEventListener('touchend', () => isDragging = false);
-        }
-
-        function loadLocation(id) {
-            // (Zelfde functie als voorheen voor het tonen van de teksten)
-            const loc = locations[id];
-            if (!loc) return;
+        function loadLocation(id, zoneId) {
+            const loc = locations[id] || { title: `Locatie #${id}`, text: "Beknopte informatie over dit gebouw volgt." };
             document.getElementById('app-content').innerHTML = `
-                <div class="animate-in slide-in-from-right-4 duration-300">
-                    <button onclick="showMenu()" class="mb-6 text-blue-400 text-xs font-black flex items-center bg-blue-500/10 px-4 py-2 rounded-full border border-blue-500/20 uppercase tracking-tighter">
-                         Terug naar Zones
-                    </button>
-                    <div class="mb-6 relative">
-                        <span class="text-slate-800 font-black text-8xl absolute -right-2 -top-10 -z-10 opacity-30">#${id}</span>
-                        <h2 class="text-4xl font-black text-white leading-tight">${loc.title}</h2>
-                    </div>
-                    <div class="glass-card p-6 mb-6">
-                        <div class="text-[1.1rem] leading-relaxed text-slate-100 space-y-4">
-                            ${loc.text}
-                        </div>
-                        <button onclick="showMenu()" class="mt-10 w-full bg-white text-slate-950 font-black py-5 rounded-2xl text-xl">VOLGENDE STOP</button>
-                    </div>
-                </div>
-            `;
+                <button onclick="loadZone(${zoneId})" class="mb-6 text-blue-400 font-bold text-xs uppercase flex items-center bg-blue-500/10 px-4 py-2 rounded-full border border-blue-500/20">
+                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M15 19l-7-7 7-7"></path></svg> Terug naar kaart
+                </button>
+                <div class="glass-card p-6 shadow-2xl">
+                    <h2 class="text-3xl font-black mb-4">${loc.title}</h2>
+                    <div class="prose prose-invert"><p class="text-lg leading-relaxed">${loc.text}</p></div>
+                    <button onclick="loadZone(${zoneId})" class="mt-8 w-full bg-white text-slate-900 font-black py-4 rounded-2xl shadow-xl active:scale-95 transition-all text-lg">Klaar / Terug</button>
+                </div>`;
         }
 
         showMenu();
