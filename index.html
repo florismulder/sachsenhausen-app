@@ -3,60 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Sachsenhausen Gids</title>
+    <title>Sachsenhausen Gids App</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #0f172a; color: #f1f5f9; }
-        .zone-card { background: #1e293b; border: 2px solid #334155; border-radius: 20px; transition: all 0.2s; position: relative; overflow: hidden; }
-        .zone-card:active { transform: scale(0.98); background: #2563eb; }
+        body { font-family: 'Inter', sans-serif; background-color: #0f172a; color: #f1f5f9; -webkit-tap-highlight-color: transparent; }
+        .zone-card { background: #1e293b; border: 2px solid #334155; border-radius: 20px; transition: all 0.2s; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        .zone-card:active { transform: scale(0.97); background: #2563eb; border-color: #60a5fa; }
+        
         .map-view { 
             position: relative; width: 100%; aspect-ratio: 1/1; 
-            background-color: #fff; border-radius: 24px; border: 4px solid #1e293b;
+            background-color: #1e293b; border-radius: 24px; border: 4px solid #334155;
             background-size: contain; background-repeat: no-repeat; background-position: center;
         }
+
         .map-pin { 
-            position: absolute; width: 48px; height: 48px; transform: translate(-50%, -50%); 
+            position: absolute; width: 46px; height: 46px; transform: translate(-50%, -50%); 
             border-radius: 50%; border: 3px solid white; display: flex; 
-            items-center; justify-content: center; font-weight: 900; font-size: 0px; /* Onzichtbaar over het cijfer */
+            items-center; justify-content: center; font-weight: 900; font-size: 0px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.5);
         }
-        .pin-long { border-color: #fbbf24; background: rgba(251, 191, 36, 0.3); box-shadow: 0 0 15px #fbbf24; }
-        .pin-short { border-color: #3b82f6; background: rgba(59, 130, 246, 0.3); box-shadow: 0 0 15px #3b82f6; }
-        .pin-info { border-color: #94a3b8; background: rgba(148, 163, 184, 0.1); }
+        .pin-long { border-color: #fbbf24; background: rgba(251, 191, 36, 0.4); box-shadow: 0 0 20px #fbbf24; }
+        .pin-short { border-color: #3b82f6; background: rgba(59, 130, 246, 0.4); box-shadow: 0 0 15px #3b82f6; }
+        .pin-info { border-color: #94a3b8; background: rgba(148, 163, 184, 0.2); }
+        
+        .glass-card { background: rgba(30, 41, 59, 0.9); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 28px; }
     </style>
 </head>
 <body>
 
-    <header class="bg-slate-900 border-b border-slate-700 p-4 sticky top-0 z-50 flex justify-between items-center">
-        <h1 class="font-black text-xl uppercase tracking-tighter" onclick="showMenu()">SACHSENHAUSEN</h1>
-        <button onclick="showMenu()" class="bg-slate-700 px-4 py-2 rounded-full text-xs font-bold">ZONES</button>
+    <header class="bg-slate-900/90 border-b border-slate-700 p-4 sticky top-0 z-50 flex justify-between items-center backdrop-blur-md">
+        <div onclick="showMenu()">
+            <h1 class="font-black text-xl uppercase tracking-tighter text-white">SACHSENHAUSEN</h1>
+            <p class="text-[9px] tracking-[0.3em] text-blue-400 font-bold uppercase mt-1 leading-none">Gids Applicatie</p>
+        </div>
+        <button onclick="showMenu()" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-full text-[10px] font-black shadow-lg transition-all uppercase">Zones</button>
     </header>
 
     <main id="app-content" class="p-4 max-w-xl mx-auto"></main>
 
     <script>
+        // Versiebeheer om cache te flushen
+        const v = "?v=" + new Date().getTime();
+
         const zones = {
-            1: { name: 'Entree & SS-Terrein', img: 'plattegrond_site_sachsenhausen_1.png', pins: { 1:{x:16,y:80}, 2:{x:20,y:85}, 3:{x:48,y:70}, 4:{x:74,y:48}, 5:{x:82,y:35}, 6:{x:71,y:38}, 7:{x:61,y:40}, 8:{x:76,y:20}, 9:{x:64,y:27} }},
-            2: { name: 'Poort & Kleine Lager', img: 'plattegrond_site_sachsenhausen_2.png', pins: { 10:{x:19,y:71}, 11:{x:29,y:60}, 12:{x:22,y:54}, 13:{x:35,y:49}, 14:{x:46,y:56}, 15:{x:49,y:38}, 16:{x:64,y:36}, 17:{x:47,y:21} }},
-            3: { name: 'Appèlplaats & Centrale Keuken', img: 'plattegrond_site_sachsenhausen_3.png', pins: { 18:{x:72,y:26}, 19:{x:60,y:56}, 20:{x:59,y:70}, 21:{x:46,y:68}, 22:{x:48,y:52}, 23:{x:25,y:22}, 24:{x:15,y:45}, 38:{x:21,y:74}, 39:{x:26,y:87} }},
-            4: { name: 'Station Z & Noordpunt', img: 'plattegrond_site_sachsenhausen_4.png', pins: { 29:{x:34,y:73}, 30:{x:66,y:62}, 31:{x:33,y:49}, 32:{x:39,y:31} }},
-            5: { name: 'Industriehof & Kampmuur', img: 'plattegrond_site_sachsenhausen_5.png', pins: { 25:{x:44,y:12}, 26:{x:42,y:21}, 27:{x:35,y:29}, 28:{x:35,y:40}, 40:{x:53,y:66}, 33:{x:75,y:87} }},
-            6: { name: 'Ziekenboeg (Revier)', img: 'plattegrond_site_sachsenhausen_6.png', pins: { 34:{x:28,y:43}, 36:{x:51,y:58}, 35:{x:27,y:76} }}
+            1: { name: '1. Entree & SS-Terrein', img: 'plattegrond_site_sachsenhausen_1.png', pins: { 1:{x:46,y:52}, 2:{x:45,y:63}, 3:{x:47,y:75}, 4:{x:60,y:75}, 6:{x:57,y:85} }},
+            2: { name: '2. Poort & Kleine Lager', img: 'plattegrond_site_sachsenhausen_2.png', pins: { 10:{x:50,y:30}, 11:{x:40,y:30}, 12:{x:50,y:45}, 13:{x:50,y:55}, 15:{x:35,y:55}, 16:{x:35,y:65}, 17:{x:65,y:55} }},
+            3: { name: '3. Appèlplaats & Keuken', img: 'plattegrond_site_sachsenhausen_3.png', pins: { 18:{x:30,y:30}, 20:{x:45,y:30}, 21:{x:55,y:30}, 22:{x:55,y:45}, 38:{x:80,y:30}, 39:{x:80,y:45} }},
+            4: { name: '4. Station Z & Noordpunt', img: 'plattegrond_site_sachsenhausen_4.png', pins: { 27:{x:50,y:50}, 29:{x:50,y:20}, 30:{x:70,y:40} }},
+            5: { name: '5. Industriehof & Muur', img: 'plattegrond_site_sachsenhausen_5.png', pins: { 25:{x:40,y:30}, 26:{x:40,y:50}, 27:{x:40,y:70}, 28:{x:40,y:85} }},
+            6: { name: '6. Ziekenboeg (Revier)', img: 'plattegrond_site_sachsenhausen_6.png', pins: { 34:{x:50,y:50}, 35:{x:50,y:75} }}
         };
 
         const locations = {
-            2: { title: "De Modellen", type: "long", next: 3, text: "Begin hier. De geometrie van de driehoek staat centraal. Het panopticon-ontwerp zorgde voor totale controle.", sources: ["Morsch, 2014"] },
-            10: { title: "Toren A", type: "long", next: 12, text: "De poort met 'Arbeit macht frei'. Let op de omgekeerde B als teken van verzet.", sources: ["Gedenkstätte Sachsenhausen"] },
-            27: { title: "Station Z", type: "long", next: 32, text: "De plek van vernietiging: gaskamer en crematorium.", sources: ["Murder and Mass Murder"] },
-            // ... vul hier de overige teksten aan zoals we ze besproken hebben
+            2: { title: "De Modellen", type: "long", next: 3, text: "Begin hier. Kijk naar het ontwerp: de ideale driehoek. Sachsenhausen was het 'modernste' kamp van de nazi's, ontworpen voor totale visuele controle vanuit Toren A. Het was het administratieve hart van alle kampen.", sources: ["Morsch, 2014"] },
+            10: { title: "Toren A", type: "long", next: 12, text: "De poort naar de hel. De tekst 'Arbeit macht frei' was bedoeld als ultiem cynisme. Voor gevangenen betekende dit punt het einde van hun menselijkheid. Let op de omgekeerde 'B' in 'Arbeit' als teken van verzet door gevangen-smeden.", sources: ["Gedenkstätte Sachsenhausen"] },
+            12: { title: "Appèlplaats", type: "short", next: 13, text: "Dit plein was de plek van urenlang tellen, vernedering en marteling in de kou. Hier werd het individu gebroken tot een nummer.", sources: ["Sachsenhausen Gids"] },
+            15: { title: "Barak 38", type: "long", next: 16, text: "Onderdeel van het 'Kleine Lager'. Hier werden na de Kristallnacht duizenden Joodse mannen opeengepakt. In 1992 staken neonazi's deze barak in brand.", sources: ["Joodse Slachtoffers Sachsenhausen"] },
+            27: { title: "Station Z", type: "long", next: 32, text: "De plek van vernietiging. Hier bevonden zich de gaskamer en het crematorium. De laatste letter van het alfabet voor het laatste stadium van een leven.", sources: ["Murder and Mass Murder Expositie"] },
+            34: { title: "De Ziekenboeg", type: "long", next: 2, text: "Geen plek van genezing, maar van misdaad. Hier vonden medische experimenten op gevangenen plaats.", sources: ["Medical Crimes Report"] }
         };
 
         function showMenu() {
-            let html = `<div class="mb-6"><h2 class="text-2xl font-black italic">Selecteer een Zone</h2></div>
+            let html = `<div class="mb-6 mt-4"><h2 class="text-3xl font-black italic text-white leading-tight">Navigatie Zones</h2><p class="text-slate-400 text-sm mt-2 font-medium">Kies het gebied waar je nu bent:</p></div>
                         <div class="grid grid-cols-1 gap-4 pb-10">`;
             Object.keys(zones).forEach(id => {
-                html += `<div onclick="loadZone(${id})" class="zone-card p-6 flex justify-between items-center">
-                            <span class="font-bold">${zones[id].name}</span>
-                            <div class="bg-blue-600/20 p-2 rounded-full"><svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"></path></svg></div>
+                html += `<div onclick="loadZone(${id})" class="zone-card p-6 flex justify-between items-center group">
+                            <span class="font-bold text-lg text-slate-100">${zones[id].name}</span>
+                            <div class="bg-blue-600/20 p-2 rounded-full group-active:bg-white/20 transition-all"><svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"></path></svg></div>
                          </div>`;
             });
             html += `</div>`;
@@ -65,30 +78,23 @@
 
         function loadZone(id) {
             const zone = zones[id];
-            let html = `<button onclick="showMenu()" class="mb-4 text-blue-400 font-bold text-xs uppercase flex items-center"><svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M15 19l-7-7 7-7"></path></svg> Terug naar Zones</button>
-                        <div class="map-view mb-6" style="background-image: url('${zone.img}')">`;
+            // Cache-buster toevoegen aan de afbeelding URL
+            const imageUrl = zone.img + v;
+            
+            let html = `<button onclick="showMenu()" class="mb-4 text-blue-400 font-black text-[10px] uppercase flex items-center bg-blue-500/10 px-4 py-2 rounded-full border border-blue-500/20 tracking-widest"><svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M15 19l-7-7 7-7"></path></svg> Overzicht</button>
+                        <div class="map-view mb-6 shadow-2xl" style="background-image: url('${imageUrl}')">`;
+            
             Object.keys(zone.pins).forEach(pinId => {
                 const type = locations[pinId] ? locations[pinId].type : 'info';
                 html += `<div onclick="loadLocation(${pinId}, ${id})" class="map-pin pin-${type}" style="left:${zone.pins[pinId].x}%; top:${zone.pins[pinId].y}%;"></div>`;
             });
-            html += `</div>`;
+            
+            html += `</div><p class="text-center text-slate-500 text-[10px] font-bold uppercase tracking-widest">Klik op een nummer op de kaart</p>`;
             document.getElementById('app-content').innerHTML = html;
         }
 
         function loadLocation(id, zoneId) {
-            const loc = locations[id] || { title: `Locatie #${id}`, text: "Beknopte informatie over dit gebouw volgt." };
+            const loc = locations[id] || { title: `Locatie #${id}`, text: "Beknopte informatie over dit gebouw wordt nog geladen.", type: 'info' };
             document.getElementById('app-content').innerHTML = `
-                <button onclick="loadZone(${zoneId})" class="mb-6 text-blue-400 font-bold text-xs uppercase flex items-center bg-blue-500/10 px-4 py-2 rounded-full border border-blue-500/20">
-                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M15 19l-7-7 7-7"></path></svg> Terug naar kaart
-                </button>
-                <div class="glass-card p-6 shadow-2xl">
-                    <h2 class="text-3xl font-black mb-4">${loc.title}</h2>
-                    <div class="prose prose-invert"><p class="text-lg leading-relaxed">${loc.text}</p></div>
-                    <button onclick="loadZone(${zoneId})" class="mt-8 w-full bg-white text-slate-900 font-black py-4 rounded-2xl shadow-xl active:scale-95 transition-all text-lg">Klaar / Terug</button>
-                </div>`;
-        }
-
-        showMenu();
-    </script>
-</body>
-</html>
+                <button onclick="loadZone(${zoneId})" class="mb-6 text-blue-400 font-black text-[10px] uppercase flex items-center bg-blue-500/10 px-4 py-2 rounded-full border border-blue-500/20 tracking-widest">
+                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M15 19l-7-7 7-7"></path></svg> Ter
