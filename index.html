@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sachsenhausen Gids App</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+        .location-card:active { transform: scale(0.98); }
+        .menu-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-900 min-h-screen pb-10">
+
+    <header class="bg-slate-900 text-white p-4 shadow-lg sticky top-0 z-50 flex justify-between items-center">
+        <div>
+            <h1 class="font-bold text-lg leading-none">Sachsenhausen</h1>
+            <span class="text-xs text-slate-400">Gids Applicatie</span>
+        </div>
+        <button onclick="showMenu()" class="bg-slate-700 hover:bg-slate-600 px-4 py-2 rounded-lg text-sm font-bold transition-colors">MENU</button>
+    </header>
+
+    <main id="app-content" class="p-4 max-w-xl mx-auto">
+        </main>
+
+    <script>
+        const routeStops = [2, 3, 4, 6, 7, 10, 11, 12, 13, 15, 16, 17, 21, 23, 26, 27, 29, 30, 32, 34];
+
+        const locations = {
+            2: { title: "De Modellen", type: "long", next: 3, 
+                 text: "Welkom bij de modellen van het kamp. Sachsenhausen was het 'ideale' kamp van de SS: een perfecte driehoek. Vanuit Toren A kon één bewaker alle barakken zien. Dit panopticon-ontwerp zorgde voor totale psychologische controle.", 
+                 extra: "Anekdote: De SS bouwde dit kamp met gevangenen van andere kampen om het als 'model' te tonen aan internationale organisaties, terwijl de omstandigheden direct dodelijk waren.",
+                 sources: ["Gedenkstätte Sachsenhausen Archief", "Morsch: Architectuur van de Macht"],
+                 walking: "Verlaat het informatiecentrum en loop de 'Camp Street' op, de brede weg tussen de gebouwen." },
+            3: { title: "Camp Street (Lagerstraße)", type: "short", next: 4, 
+                 text: "Dit was de grens. Links zag men de administratie van de daders, rechts de gevangenis. Voor velen was dit de laatste weg die ze in vrijheid (zonder hekken) liepen.", 
+                 sources: ["Site Plan Guide"],
+                 walking: "Loop verder naar de kazerne van de SS-troepen aan uw rechterhand." },
+            4: { title: "SS Troop Camp", type: "short", next: 6, 
+                 text: "Hier trainden de 'Totenkopf'-eenheden. Jonge SS'ers werden hier klaargestoomd voor geweld. De nabijheid van de stad Oranienburg betekende dat dit geen geheim was.", 
+                 sources: ["Sachsenhausen Memorial Research"],
+                 walking: "Loop naar het grote administratieve gebouw: het hoofdkwartier." },
+            10: { title: "Toren A (Ingang)", type: "long", next: 11, 
+                 text: "U staat nu voor de beruchte spreuk 'Arbeit macht frei'. Dit was puur cynisme. Toren A was het zenuwcentrum van de terreur binnen de omheining. Hier werd elke beweging geregistreerd.", 
+                 extra: "Detail: De letters van de spreuk zijn door gevangenen gemaakt. Let op de 'B' in 'Arbeit' - vaak wordt gezegd dat gevangenen deze expres ondersteboven zetten als klein verzet.",
+                 sources: ["Sachsenhausen: Everyday life and Resistance"],
+                 walking: "Kijk direct rechts en links van de toren naar het hekwerk en de 'dodenstrook'." },
+            11: { title: "Security System", type: "long", next: 12, 
+                 text: "De muur, het elektrische hek en de 'dodenstrook'. Wie de grasstrook betrad, werd zonder waarschuwing neergeschoten. Dit was de ultieme fysieke barrière.", 
+                 extra: "Anekdote: Gevangenen die het niet meer zagen zitten, 'renden in het hek' – een veelvoorkomende vorm van zelfmoord in het kamp.",
+                 sources: ["Expositie 'Security' Sachsenhausen"],
+                 walking: "Loop nu het centrale halfronde plein op: de Appèlplaats." }
+            // De rest van de data vullen we stap voor stap in
+        };
+
+        function generateFullMenu() {
+            let html = `<div class="mb-6"><h2 class="text-2xl font-bold">Hoofdmenu</h2><p class="text-gray-600">Kies een locatie of volg de route (blauw).</p></div><div class="menu-grid">`;
+            for (let i = 1; i <= 40; i++) {
+                const isRoute = routeStops.includes(i);
+                const hasData = locations[i];
+                const colorClass = isRoute ? 'bg-blue-600 text-white border-blue-700' : 'bg-white text-gray-400 border-gray-200';
+                html += `<button onclick="loadLocation(${i})" class="${colorClass} border h-14 rounded-lg shadow-sm font-bold flex items-center justify-center location-card">${i}</button>`;
+            }
+            html += `</div>`;
+            return html;
+        }
+
+        function showMenu() {
+            document.getElementById('app-content').innerHTML = generateFullMenu();
+            window.scrollTo(0,0);
+        }
+
+        function loadLocation(id) {
+            const loc = locations[id];
+            let html = "";
+            
+            if (!loc) {
+                // Generieke weergave voor nummers die niet in de hoofdroute zitten
+                html = `<div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
+                            <span class="text-slate-400 font-bold text-xl">#${id}</span>
+                            <h2 class="text-2xl font-bold mb-4 italic text-gray-400 text-sm">Informatie voor dit punt volgt nog.</h2>
+                            <button onclick="showMenu()" class="mt-6 w-full bg-slate-800 text-white font-bold py-3 rounded-xl">Terug naar menu</button>
+                        </div>`;
+            } else {
+                html = `<div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
+                            <div class="flex justify-between items-center mb-6">
+                                <span class="bg-${loc.type === 'long' ? 'amber-100 text-amber-800' : 'blue-100 text-blue-800'} px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
+                                    ${loc.type === 'long' ? 'Lange stop (2 min)' : 'Korte stop (1 min)'}
+                                </span>
+                                <span class="text-slate-300 font-black text-3xl">#${id}</span>
+                            </div>
+                            
+                            <h2 class="text-3xl font-extrabold mb-6 text-slate-900">${loc.title}</h2>
+                            
+                            <div class="text-lg text-gray-800 leading-relaxed mb-8 space-y-4">
+                                ${loc.text.split('\n').map(p => `<p>${p}</p>`).join('')}
+                                ${loc.extra ? `<div class="bg-slate-50 border-l-4 border-slate-400 p-4 my-6 italic text-gray-700">${loc.extra}</div>` : ''}
+                            </div>
+                            
+                            <div class="space-y-4">
+                                <button id="btn-klaar" onclick="finishLocation(${id})" class="w-full bg-green-600 text-white font-black py-5 rounded-2xl shadow-xl hover:bg-green-700 transform transition active:scale-95 text-xl tracking-wide">
+                                    IK BEN KLAAR
+                                </button>
+                                
+                                <div id="next-step" class="hidden animate-in fade-in duration-500 bg-blue-600 p-5 rounded-2xl text-white shadow-inner">
+                                    <p class="font-bold mb-2 flex items-center">
+                                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7"></path></svg>
+                                        VOLGENDE STAP:
+                                    </p>
+                                    <p class="text-blue-50 mb-4">${loc.walking}</p>
+                                    <button onclick="loadLocation(${loc.next})" class="w-full bg-white text-blue-600 font-bold py-3 rounded-xl shadow-md">
+                                        Ga naar stop #${loc.next}
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="mt-12 pt-8 border-t border-gray-100">
+                                <h3 class="text-xs font-bold text-gray-400 uppercase tracking-[0.2em] mb-4">Bronnen & Verdieping</h3>
+                                <ul class="space-y-2">
+                                    ${loc.sources.map(s => `<li class="text-sm text-gray-500 flex items-start"><span class="mr-2 text-blue-400">•</span>${s}</li>`).join('')}
+                                </ul>
+                            </div>
+                        </div>`;
+            }
+            
+            document.getElementById('app-content').innerHTML = html;
+            window.scrollTo(0,0);
+        }
+
+        function finishLocation(id) {
+            document.getElementById('btn-klaar').classList.add('hidden');
+            document.getElementById('next-step').classList.remove('hidden');
+            document.getElementById('next-step').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        showMenu();
+    </script>
+</body>
+</html>
